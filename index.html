@@ -587,7 +587,7 @@
     currentSoldier = soldier;
     if (save) {
         localStorage.setItem(STORAGE_KEY, soldier.id);
-        showToast(` {soldier.fullName}`);
+        showToast(` ${soldier.fullName}`);
     }
 
     // דחיפת מצב חדש להיסטוריה כדי שתמיכה בכפתור חזור תעבוד
@@ -611,7 +611,7 @@
 
             // Render Header Card info
             document.getElementById('soldier-name').textContent = currentSoldier.fullName;
-            document.getElementById('soldier-team').textContent = `צוות ${currentSoldier.team}`;
+            document.getElementById('soldier-team').textContent = `מחלקה ${currentSoldier.team}`;
             document.getElementById('soldier-avatar').textContent = `${currentSoldier.firstName[0]}${currentSoldier.lastName[0] || ''}`;
 
             // Current status calculation
@@ -815,7 +815,7 @@
                 text += `${d.date} (${d.day}): ${st} ${icon}\n`;
             });
 
-            text += `נוצר באמצעות אפליקציית לוח יציאות אישי`;
+            text += ` פלוגה ג `;
 
             // Copy to Clipboard
             const dummy = document.createElement("textarea");
