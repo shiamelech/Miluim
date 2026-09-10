@@ -179,9 +179,9 @@
                     <span class="font-medium">סינון לפי צוות:</span>
                     <div class="flex gap-1.5" id="team-filter-buttons">
                         <button onclick="filterTeam('ALL')" class="team-btn active px-2.5 py-1 rounded-lg bg-brand-600 text-white font-medium">הכל</button>
-                        <button onclick="filterTeam('1')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">צוות 1</button>
-                        <button onclick="filterTeam('2')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">צוות 2</button>
-                        <button onclick="filterTeam('3')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">צוות 3</button>
+                        <button onclick="filterTeam('1')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">מחלקה 1</button>
+                        <button onclick="filterTeam('2')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">מחלקה 2</button>
+                        <button onclick="filterTeam('3')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">מחלקה 3</button>
                     </div>
                 </div>
 
@@ -776,7 +776,7 @@
                                     <span class="text-sm font-semibold text-white">יום ${dateObj.day}</span>
                                     ${isToday ? '<span class="bg-brand-500/20 text-brand-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-brand-500/30">היום</span>' : ''}
                                 </div>
-                                <span class="text-[11px] text-slate-400">${dateObj.month === '09' ? 'ספטמבר' : 'אוקטובר'} 2024</span>
+                                <span class="text-[11px] text-slate-400">${dateObj.month === '09' ? 'ספטמבר' : 'אוקטובר'} 2026</span>
                             </div>
                         </div>
 
@@ -823,7 +823,7 @@
                 text += `${d.date} (${d.day}): ${st} ${icon}\n`;
             });
 
-            text += `\nנוצר באמצעות אפליקציית לוח יציאות אישי`;
+            text += `נוצר באמצעות אפליקציית לוח יציאות אישי`;
 
             // Copy to Clipboard
             const dummy = document.createElement("textarea");
