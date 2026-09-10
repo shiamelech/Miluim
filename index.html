@@ -590,24 +590,27 @@
         }
 
         function selectSoldier(soldier, save = true) {
-            currentSoldier = soldier;
-            if (save) {
-                localStorage.setItem(STORAGE_KEY, soldier.id);
-                showToast(`נבחר החייל: ${soldier.fullName}`);
-            }
+    currentSoldier = soldier;
+    if (save) {
+        localStorage.setItem(STORAGE_KEY, soldier.id);
+        showToast(`נבחר החייל: ${soldier.fullName}`);
+    }
 
-            // Close search modal / view
-            document.getElementById('autocomplete-list').classList.add('hidden');
-            document.getElementById('view-search').classList.add('hidden');
-            document.getElementById('view-search').classList.remove('flex');
-            
-            // Show Dashboard
-            document.getElementById('view-dashboard').classList.remove('hidden');
-            document.getElementById('view-dashboard').classList.add('flex');
-            document.getElementById('header-actions').classList.remove('hidden');
+    // דחיפת מצב חדש להיסטוריה כדי שתמיכה בכפתור חזור תעבוד
+    history.pushState({ view: 'dashboard' }, '');
 
-            renderDashboard();
-        }
+    // Close search modal / view
+    document.getElementById('autocomplete-list').classList.add('hidden');
+    document.getElementById('view-search').classList.add('hidden');
+    document.getElementById('view-search').classList.remove('flex');
+    
+    // Show Dashboard
+    document.getElementById('view-dashboard').classList.remove('hidden');
+    document.getElementById('view-dashboard').classList.add('flex');
+    document.getElementById('header-actions').classList.remove('hidden');
+
+    renderDashboard();
+}
 
         function renderDashboard() {
             if (!currentSoldier) return;
@@ -848,6 +851,16 @@
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js');
   }
+
+        // האזנה ללחיצה על כפתור חזור במכשיר
+window.addEventListener('popstate', (event) => {
+    const dashboard = document.getElementById('view-dashboard');
+    // אם הדשבורד מופעל כרגע, נחזיר את המשתמש למסך החיפוש במקום לסגור את האפליקציה
+    if (dashboard && !dashboard.classList.contains('hidden')) {
+        showSearchScreen();
+    }
+});
+
 </script>
 
 </body>
