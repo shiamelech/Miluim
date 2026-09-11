@@ -300,19 +300,20 @@ function selectSoldier(soldier, save = true) {
     document.getElementById('view-dashboard').classList.add('flex');
     document.getElementById('header-actions').classList.remove('hidden');
 
-    renderDashboard();
-}
-
-function renderDashboard() {
+    
+    
+   function renderDashboard() {
     if (!currentSoldier) return;
+
+    const todayIdx = getTodayIndex();
 
     document.getElementById('soldier-name').textContent = currentSoldier.fullName;
     document.getElementById('soldier-team').textContent = `מחלקה ${currentSoldier.team}`;
     document.getElementById('soldier-avatar').textContent = `${currentSoldier.firstName[0]}${currentSoldier.lastName[0] || ''}`;
 
-    const currentStatus = currentSoldier.schedule[TODAY_INDEX] || 'ללא נתון';
+    const currentStatus = currentSoldier.schedule[todayIdx] || 'ללא נתון';
     const statusBadge = document.getElementById('current-status-badge');
-    
+
     if (currentStatus === 'בסיס') {
         statusBadge.className = 'px-2 py-0.5 rounded-md text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1';
         statusBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-ping"></span> בבסיס ⛺`;
@@ -351,6 +352,95 @@ function renderDashboard() {
         renderTimeline();
     }
 }
+
+function renderMonthView() {
+    const monthContainer = document.getElementById('monthViewContainer');
+    if (!monthContainer || !currentSoldier) return;
+    
+    // וידוא החלת מחלקת ה-Grid
+    monthContainer.className = 'month-grid';
+    monthContainer.innerHTML = '';
+
+    const daysOfWeek = ['א\'', 'ב\'', 'ג\'', 'ד\'', 'ה\'', 'ו\'', 'ש\''];
+    daysOfWeek.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'month-day-header';
+        header.innerText = day;
+        monthContainer.appendChild(header);
+    });
+
+    const dayToColumn = {
+        'ראשון': 1,
+        'שני': 2,
+        'שלישי': 3,
+        'רביעי': 4,
+        'חמישי': 5,
+        'שישי': 6,
+        'שבת': 7
+    };
+
+    const todayIdx = getTodayIndex();
+
+    DATES_LIST.forEach((item, index) => {
+        const status = currentSoldier.schedule[index] || '';
+        const isMatch = (selectedStatusFilter === 'ALL') ||
+                        (selectedStatusFilter === 'בסיס' && status === 'בסיס') ||
+                        (selectedStatusFilter === 'בית' && status === 'בית');
+
+        const card = document.createElement('div');
+        const isToday = index === todayIdx;
+        
+        card.className = `month-day-card ${isToday ? 'is-today' : ''} ${!isMatch ? 'opacity-25' : ''}`;
+
+        // התאמת התא הראשון לטור יום השבוע המתאים (09/09 חל ביום רביעי -> טור 4)
+        if (index === 0) {
+            const startCol = dayToColumn[item.day] || 1;
+            card.style.gridColumnStart = startCol;
+        }
+
+        const dayNum = item.date.split('/')[0];
+        const statusClass = status === 'בסיס' ? 'base' : (status === 'בית' ? 'home' : '');
+
+        card.innerHTML = `
+            <span class="month-day-number">${dayNum}</span>
+            ${statusClass ? `<div class="status-indicator ${statusClass}" title="${status}"></div>` : ''}
+        `;
+
+        monthContainer.appendChild(card);
+    });
+}
+
+function calculateUpcomingExit() {
+    let nextExitDate = null;
+    let daysUntil = null;
+    const todayIdx = getTodayIndex();
+
+    for (let i = todayIdx; i < currentSoldier.schedule.length; i++) {
+        if (currentSoldier.schedule[i] === 'בית') {
+            nextExitDate = DATES_LIST[i].date;
+            daysUntil = i - todayIdx;
+            break;
+        }
+    }
+
+    const exitEl = document.getElementById('stat-next-exit');
+    const daysEl = document.getElementById('stat-next-days');
+
+    if (nextExitDate) {
+        exitEl.textContent = nextExitDate;
+        if (daysUntil === 0) {
+            daysEl.textContent = 'היום יוצאים!';
+        } else if (daysUntil === 1) {
+            daysEl.textContent = 'מחר בבית';
+        } else {
+            daysEl.textContent = `בעוד ${daysUntil} ימים`;
+        }
+    } else {
+        exitEl.textContent = 'אין יציאה';
+        daysEl.textContent = 'בטווח הנתונים';
+    }
+}
+ 
 
 function calculateUpcomingExit() {
     let nextExitDate = null;
