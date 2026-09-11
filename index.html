@@ -108,6 +108,105 @@
         .animate-fade-in {
             animation: fadeIn 0.25s ease-out forwards;
         }
+        /* סידור השורה העליונה שתחזיק את כל האלמנטים */
+.controls-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  direction: rtl;
+}
+
+/* עיצוב כפתור מעבר התצוגה (סגול/כהה תואם) */
+.view-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.toggle-btn {
+  background: transparent;
+  color: #8b92a5;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 9px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* מצב פעיל בלחצן התצוגה */
+.toggle-btn.active {
+  background: #3b3086; /* הסגול הכהה של האפליקציה */
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(93, 76, 230, 0.4);
+}
+
+/* גריד של תצוגה חודשית (7 עמודות ימים) */
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  direction: rtl;
+  margin-top: 10px;
+}
+
+.month-day-header {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #8b92a5;
+  font-weight: bold;
+  padding-bottom: 4px;
+}
+
+.month-day-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 6px 2px;
+  min-height: 58px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* הדגשת היום הנוכחי בתצוגה החודשית */
+.month-day-card.is-today {
+  border: 1.5px solid #5d4ce6;
+  background: rgba(93, 76, 230, 0.18);
+}
+
+.month-day-number {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+/* תגית סטטוס קטנה (נקודה/באדג') בתוך המשבצת של החודש */
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
+.status-indicator.base {
+  background-color: #6366f1; /* צבע בסיס - סגול/כחול */
+  box-shadow: 0 0 6px rgba(99, 102, 241, 0.8);
+}
+
+.status-indicator.home {
+  background-color: #10b981; /* צבע בית - ירוק */
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
+}
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
@@ -882,8 +981,67 @@ window.addEventListener('popstate', (event) => {
         showSearchScreen();
     }
 });
+// משתנה לשמירת הסטטוס הנוכחי
+let currentViewMode = 'list'; 
 
-</script>
+function switchView(viewMode) {
+  currentViewMode = viewMode;
+
+  const listContainer = document.getElementById('daysListContainer'); // השם של קונטיינר הרשימה הקיימת אצלך
+  const monthContainer = document.getElementById('monthViewContainer');
+  
+  // עדכון עיצוב כפתורי ה-Toggle
+  document.getElementById('listViewBtn').classList.toggle('active', viewMode === 'list');
+  document.getElementById('monthViewBtn').classList.toggle('active', viewMode === 'month');
+
+  if (viewMode === 'list') {
+    listContainer.style.display = 'block';
+    monthContainer.style.display = 'none';
+  } else {
+    listContainer.style.display = 'none';
+    monthContainer.style.display = 'grid';
+    renderMonthView(); // בונה את הלוח החודשי
+  }
+}
+
+// פונקציה לרינדור תצוגת החודש
+function renderMonthView() {
+  const monthContainer = document.getElementById('monthViewContainer');
+  monthContainer.innerHTML = '';
+
+  // 1. כותרות ימי השבוע (א' עד ש')
+  const daysOfWeek = ['א\'', 'ב\'', 'ג\'', 'ד\'', 'ה\'', 'ו\'', 'ש\''];
+  daysOfWeek.forEach(day => {
+    const header = document.createElement('div');
+    header.className = 'month-day-header';
+    header.innerText = day;
+    monthContainer.appendChild(header);
+  });
+
+  // 2. יצירת המשבצות עבור הימים מתוך מערך התאריכים (DATES_LIST)
+  DATES_LIST.forEach(item => {
+    const card = document.createElement('div');
+    
+    // בדיקה אם יום זה הוא "היום"
+    const isToday = item.iso === new Date().toISOString().split('T')[0]; // או הלוגיקה הקיימת אצלך לבדיקת היום
+    card.className = `month-day-card ${isToday ? 'is-today' : ''}`;
+
+    // חילוץ מספר היום (למשל "10" מתוך "10/09")
+    const dayNum = item.date.split('/')[0];
+    
+    // קביעת צבע הנקודה לפי "בסיס" או "בית"
+    const statusClass = (item.status === 'בסיס' || item.type === 'base') ? 'base' : 'home';
+
+    card.innerHTML = `
+      <span class="month-day-number">${dayNum}</span>
+      <div class="status-indicator ${statusClass}" title="${item.status || ''}"></div>
+    `;
+
+    monthContainer.appendChild(card);
+  });
+}
+
+    </script>
 
 </body>
 </html>
