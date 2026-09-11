@@ -117,28 +117,67 @@ const SOLDIERS_DATA = [
     { id: "3_28", firstName: "רועי", lastName: "משולם", fullName: "רועי משולם", team: "3", schedule: ["בית","בית","בסיס","בסיס","בסיס","בית","בית","בית","בסיס","בסיס","בסיס","בסיס","בסיס","בית","בית","בית","בסיס","בסיס","","","","","","בית","בית","","",""] }
 ];
 
+// ... סוף המערך SOLDIERS_DATA
+
 const STORAGE_KEY = "military_schedule_selected_soldier_id";
 let currentSoldier = null;
 let selectedTeamFilter = "ALL";
 let selectedStatusFilter = "ALL";
 let currentViewMode = 'list';
 
+// ==========================================
+// 1. מיקום הפונקציות החדשות:
+// ==========================================
+
+// חישוב דינמי של אינדקס היום הנוכחי
 function getTodayIndex() {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const formatted = `${day}/${month}`;
-    
+
     const idx = DATES_LIST.findIndex(d => d.date === formatted);
-    return idx !== -1 ? idx : 1; 
+    return idx !== -1 ? idx : 0; 
 }
 
-const TODAY_INDEX = getTodayIndex();
+// תזמון רענון אוטומטי של התצוגה בחצות
+function scheduleMidnightUpdate() {
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 2);
+    const timeUntilMidnight = midnight.getTime() - now.getTime();
+
+    setTimeout(() => {
+        if (currentSoldier) {
+            renderDashboard();
+        }
+        scheduleMidnightUpdate();
+    }, timeUntilMidnight);
+}
+
+// ==========================================
+// 2. הפעלת התזמון בתוך אירוע טעינת הדף:
+// ==========================================
 
 window.addEventListener('DOMContentLoaded', () => {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js');
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+            console.error('Service Worker registration failed:', err);
+        });
     }
+
+    // קריאה להפעלת התזמון החוטצי
+    scheduleMidnightUpdate();
+
+    const savedSoldierId = localStorage.getItem(STORAGE_KEY);
+    if (savedSoldierId) {
+        const found = SOLDIERS_DATA.find(s => s.id === savedSoldierId);
+        if (found) {
+            selectSoldier(found, false);
+            return;
+        }
+    }
+    showSearchScreen();
+});
 
     const savedSoldierId = localStorage.getItem(STORAGE_KEY);
     if (savedSoldierId) {
