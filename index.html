@@ -198,30 +198,34 @@
                     </div>
                 </div>
 
-                <!-- Controls -->
-                <div class="flex items-center justify-between gap-2 mt-1">
-                    <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
-                        <button onclick="setDisplayFilter('ALL')" id="filter-btn-ALL" class="status-filter-btn active px-3 py-1 rounded-lg text-slate-300 font-medium">הכל</button>
-                        <button onclick="setDisplayFilter('בסיס')" id="filter-btn-בסיס" class="status-filter-btn px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200">בסיס</button>
-                        <button onclick="setDisplayFilter('בית')" id="filter-btn-בית" class="status-filter-btn px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200">בית</button>
-                    </div>
+          
+                    
 
-                    <div class="controls-container">
-                        <div class="view-toggle">
-                            <button id="listViewBtn" class="toggle-btn active" onclick="switchView('list')">📅 ימים</button>
-                            <button id="monthViewBtn" class="toggle-btn" onclick="switchView('month')">🗓️ חודש</button>
-                        </div>
-                    </div>
+                   <!-- Controls Row (Fixed for Mobile) -->
+<div class="flex flex-wrap items-center justify-between gap-2 mt-2 w-full">
+    
+    <!-- Filter Buttons -->
+    <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+        <button onclick="setDisplayFilter('ALL')" id="filter-btn-ALL" class="status-filter-btn active px-2.5 py-1 rounded-lg text-slate-300 font-medium">הכל</button>
+        <button onclick="setDisplayFilter('בסיס')" id="filter-btn-בסיס" class="status-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200">בסיס</button>
+        <button onclick="setDisplayFilter('בית')" id="filter-btn-בית" class="status-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200">בית</button>
+    </div>
 
-                    <button onclick="scrollToToday()" class="px-3 py-1.5 rounded-xl bg-brand-600/20 text-brand-300 border border-brand-500/30 text-xs font-semibold flex items-center gap-1.5 hover:bg-brand-600/30 active:scale-95 transition">
-                        <i class="fas fa-location-crosshairs text-xs"></i>
-                        <span>היום</span>
-                    </button>
-                </div>
+    <!-- Right Controls Group -->
+    <div class="flex items-center gap-2">
+        <div class="view-toggle flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+            <button id="listViewBtn" class="toggle-btn active px-2 py-1 rounded-lg" onclick="switchView('list')">📅 ימים</button>
+            <button id="monthViewBtn" class="toggle-btn px-2 py-1 rounded-lg" onclick="switchView('month')">🗓️ חודש</button>
+        </div>
 
-                <!-- Display Views -->
-                <div class="flex flex-col gap-2 mt-1" id="timeline-container"></div>
-                <div id="monthViewContainer" class="month-grid" style="display: none;"></div>
+        <button onclick="scrollToToday()" class="px-3 py-1.5 rounded-xl bg-brand-600/20 text-brand-300 border border-brand-500/30 text-xs font-semibold flex items-center gap-1 hover:bg-brand-600/30 active:scale-95 transition">
+            <i class="fas fa-location-crosshairs text-xs"></i>
+            <span>היום</span>
+        </button>
+    </div>
+
+</div>
+
 
             </section>
 
