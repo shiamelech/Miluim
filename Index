@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>לוח יציאות אישי - מילואים</title>
+    
+    <!-- PWA Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1f2937">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="מילואים">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Tailwind CSS CDN & Configuration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        },
+                        army: {
+                            base: '#1e293b',
+                            accent: '#10b981',
+                            badge: '#3b82f6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Rubik', 'Heebo', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 transform -translate-y-16 opacity-0 transition-all duration-300 ease-out pointer-events-none">
+        <div class="bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl border border-slate-700 flex items-center gap-3">
+            <i id="toast-icon" class="fas fa-check-circle text-emerald-400 text-lg"></i>
+            <span id="toast-message" class="text-sm font-medium">הודעה</span>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="w-full max-w-md mx-auto min-h-screen flex flex-col relative pb-10">
+        
+        <header class="sticky top-0 z-30 px-4 py-3 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
+                    <i class="fas fa-shield-halved text-base"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold text-white leading-none">לוח יציאות אישי</h1>
+                    <span class="text-xs text-slate-400 font-normal"> מעודכן</span>
+                </div>
+            </div>
+
+            <div id="header-actions" class="hidden">
+                <button onclick="openSearchModal()" class="px-3 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700/60 flex items-center gap-1.5 transition">
+                    <i class="fas fa-user-gear text-brand-400"></i>
+                    <span>החלף חייל</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4">
+
+            <!-- Search View -->
+            <section id="view-search" class="animate-fade-in flex flex-col gap-5 pt-2"> 
+                <div class="relative">
+                    <div class="relative flex items-center">
+                        <input type="text" id="soldier-search-input" 
+                            placeholder="הקלד שם פרטי או שם משפחה..." 
+                            class="w-full bg-slate-900/90 text-white placeholder-slate-500 text-sm rounded-2xl py-3.5 pr-11 pl-10 border border-slate-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition shadow-lg"
+                            autocomplete="off"
+                            oninput="onSearchInput(this.value)">
+                        <i class="fas fa-search absolute right-4 text-slate-400 text-sm"></i>
+                        <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute left-3 w-6 h-6 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center hover:text-white">
+                            <i class="fas fa-times text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div id="autocomplete-list" class="hidden absolute top-full right-0 left-0 mt-2 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl z-40 max-h-60 overflow-y-auto divide-y divide-slate-800"></div>
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-slate-400 px-1 pt-1">
+                    <span class="font-medium">סינון לפי צוות:</span>
+                    <div class="flex gap-1.5" id="team-filter-buttons">
+                        <button onclick="filterTeam('ALL')" class="team-btn active px-2.5 py-1 rounded-lg bg-brand-600 text-white font-medium">הכל</button>
+                        <button onclick="filterTeam('1')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">מחלקה 1</button>
+                        <button onclick="filterTeam('2')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">מחלקה 2</button>
+                        <button onclick="filterTeam('3')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">מחלקה 3</button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <div class="flex justify-between items-center px-1">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">בחירת חייל מרשימה (<span id="soldier-count">0</span>)</span>
+                    </div>
+                    <div id="soldiers-grid" class="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto p-1"></div>
+                </div>
+            </section>
+
+            <!-- Personal Dashboard View -->
+            <section id="view-dashboard" class="hidden animate-fade-in flex-col gap-4">
+                
+                <div class="glass-card rounded-2xl p-4 relative overflow-hidden border-brand-500/20 shadow-xl">
+                    <div class="absolute -left-6 -top-6 w-24 h-24 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <div class="flex items-start justify-between gap-3 relative z-10">
+                        <div class="flex items-center gap-3">
+                            <div id="soldier-avatar" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-indigo-700 text-white font-bold text-lg flex items-center justify-center shadow-lg shadow-brand-500/20">--</div>
+                            <div>
+                                <h2 id="soldier-name" class="text-lg font-bold text-white leading-tight">--</h2>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span id="soldier-team" class="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700">מחלקה --</span>
+                                    <span id="current-status-badge" class="px-2 py-0.5 rounded-md text-xs font-semibold flex items-center gap-1"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-1">
+                            <button onclick="shareWhatsApp()" title="שתף ב-WhatsApp" class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 flex items-center justify-center border border-emerald-500/20 transition">
+                                <i class="fab fa-whatsapp text-sm"></i>
+                            </button>
+                            <button onclick="openSearchModal()" title="החלף חייל" class="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center justify-center border border-slate-700 transition">
+                                <i class="fas fa-arrows-rotate text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards Row -->
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="glass-card rounded-2xl p-3 flex flex-col justify-between border-slate-800/80">
+                        <div class="flex items-center justify-between text-indigo-400 mb-1">
+                            <span class="text-[11px] font-medium text-slate-400">בבסיס</span>
+                            <i class="fas fa-campground text-xs"></i>
+                        </div>
+                        <div class="flex items-baseline gap-1">
+                            <span id="stat-base-count" class="text-xl font-extrabold text-white">0</span>
+                            <span class="text-[10px] text-slate-500">ימים</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                            <div id="stat-base-bar" class="bg-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-3 flex flex-col justify-between border-slate-800/80">
+                        <div class="flex items-center justify-between text-emerald-400 mb-1">
+                            <span class="text-[11px] font-medium text-slate-400">בבית</span>
+                            <i class="fas fa-house text-xs"></i>
+                        </div>
+                        <div class="flex items-baseline gap-1">
+                            <span id="stat-home-count" class="text-xl font-extrabold text-white">0</span>
+                            <span class="text-[10px] text-slate-500">ימים</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                            <div id="stat-home-bar" class="bg-emerald-500 h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-3 flex flex-col justify-between border-slate-800/80">
+                        <div class="flex items-center justify-between text-amber-400 mb-1">
+                            <span class="text-[11px] font-medium text-slate-400">יציאה קרובה</span>
+                            <i class="fas fa-car text-xs"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span id="stat-next-exit" class="text-sm font-bold text-amber-300 leading-tight">--/--</span>
+                            <span id="stat-next-days" class="text-[10px] text-slate-400 mt-0.5">--</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                            <div class="bg-amber-500 h-full w-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex items-center justify-between gap-2 mt-1">
+                    <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+                        <button onclick="setDisplayFilter('ALL')" id="filter-btn-ALL" class="status-filter-btn active px-3 py-1 rounded-lg text-slate-300 font-medium">הכל</button>
+                        <button onclick="setDisplayFilter('בסיס')" id="filter-btn-בסיס" class="status-filter-btn px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200">בסיס</button>
+                        <button onclick="setDisplayFilter('בית')" id="filter-btn-בית" class="status-filter-btn px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200">בית</button>
+                    </div>
+
+                    <div class="controls-container">
+                        <div class="view-toggle">
+                            <button id="listViewBtn" class="toggle-btn active" onclick="switchView('list')">📅 ימים</button>
+                            <button id="monthViewBtn" class="toggle-btn" onclick="switchView('month')">🗓️ חודש</button>
+                        </div>
+                    </div>
+
+                    <button onclick="scrollToToday()" class="px-3 py-1.5 rounded-xl bg-brand-600/20 text-brand-300 border border-brand-500/30 text-xs font-semibold flex items-center gap-1.5 hover:bg-brand-600/30 active:scale-95 transition">
+                        <i class="fas fa-location-crosshairs text-xs"></i>
+                        <span>היום</span>
+                    </button>
+                </div>
+
+                <!-- Display Views -->
+                <div class="flex flex-col gap-2 mt-1" id="timeline-container"></div>
+                <div id="monthViewContainer" class="month-grid" style="display: none;"></div>
+
+            </section>
+
+        </main>
+
+        <footer class="mt-auto pt-6 text-center text-xs text-slate-600">
+            <span>לוח יציאות מעודכן 2026</span>
+        </footer>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="script.js"></script>
+</body>
+</html>
