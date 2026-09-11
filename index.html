@@ -278,6 +278,34 @@
                         <button onclick="setDisplayFilter('בסיס')" id="filter-btn-בסיס" class="status-filter-btn px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200">בסיס</button>
                         <button onclick="setDisplayFilter('בית')" id="filter-btn-בית" class="status-filter-btn px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200">בית</button>
                     </div>
+<div class="controls-container">
+  
+  <!-- כפתור היום המקורי -->
+  <button id="todayBtn" class="btn-today" onclick="scrollToToday()">
+    <span class="icon">🎯</span> היום
+  </button>
+
+  <!-- ⭐ כפתור מחליף תצוגה חדש (רשימה / חודש) ⭐ -->
+  <div class="view-toggle">
+    <button id="listViewBtn" class="toggle-btn active" onclick="switchView('list')">
+      📅 ימים
+    </button>
+    <button id="monthViewBtn" class="toggle-btn" onclick="switchView('month')">
+      🗓️ חודש
+    </button>
+  </div>
+
+  <!-- קבוצת הסינון המקורית -->
+  <div class="filter-group">
+    <button class="filter-btn active" onclick="filterData('all')">הכל</button>
+    <button class="filter-btn" onclick="filterData('base')">בסיס</button>
+    <button class="filter-btn" onclick="filterData('home')">בית</button>
+  </div>
+
+</div>
+
+<!-- אלמנט חדש שיכיל את התצוגה החודשית (להוסיף מתחת לקונטיינר הקיים של הרשימה) -->
+<div id="monthViewContainer" class="month-grid" style="display: none;"></div>
 
                     <button onclick="scrollToToday()" class="px-3 py-1.5 rounded-xl bg-brand-600/20 text-brand-300 border border-brand-500/30 text-xs font-semibold flex items-center gap-1.5 hover:bg-brand-600/30 active:scale-95 transition">
                         <i class="fas fa-location-crosshairs text-xs"></i>
