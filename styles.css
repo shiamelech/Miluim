@@ -1,1 +1,145 @@
+body {
+    font-family: 'Rubik', 'Heebo', sans-serif;
+    background-color: #0b0f19;
+    color: #f3f4f6;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #111827;
+}
+::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #4b5563;
+}
+
+.glass-card {
+    background: rgba(17, 24, 39, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card-interactive {
+    transition: all 0.2s ease-in-out;
+}
+.glass-card-interactive:active {
+    transform: scale(0.98);
+}
+
+.pulse-glow-green {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+}
+.pulse-glow-blue {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.25s ease-out forwards;
+}
+
+.controls-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    direction: rtl;
+}
+
+.view-toggle {
+    display: flex;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 3px;
+    gap: 3px;
+}
+
+.toggle-btn {
+    background: transparent;
+    color: #8b92a5;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.toggle-btn.active {
+    background: #3b3086;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(93, 76, 230, 0.4);
+}
+
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    direction: rtl;
+    margin-top: 10px;
+}
+
+.month-day-header {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #8b92a5;
+    font-weight: bold;
+    padding-bottom: 4px;
+}
+
+.month-day-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 6px 2px;
+    min-height: 58px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.month-day-card.is-today {
+    border: 1.5px solid #5d4ce6;
+    background: rgba(93, 76, 230, 0.18);
+}
+
+.month-day-number {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 4px;
+}
+
+.status-indicator.base {
+    background-color: #6366f1;
+    box-shadow: 0 0 6px rgba(99, 102, 241, 0.8);
+}
+
+.status-indicator.home {
+    background-color: #10b981;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
+}
 
