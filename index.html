@@ -153,8 +153,6 @@
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-800/80 border border-slate-700/80 mb-3 text-brand-400 text-2xl shadow-inner">
                         <i class="fas fa-user-check"></i>
                     </div>
-                    <h2 class="text-xl font-bold text-white mb-1">ברוכים הבאים!</h2>
-                    <p class="text-slate-400 text-xs max-w-xs mx-auto">הזן את שמך הפרטי או שם המשפחה לצפייה בלוח היציאות האישי שלך</p>
                 </div>
 
                 <!-- Search Input Box -->
@@ -177,12 +175,12 @@
 
                 <!-- Team Filters -->
                 <div class="flex items-center justify-between text-xs text-slate-400 px-1 pt-1">
-                    <span class="font-medium">סינון לפי צוות:</span>
+                    <span class="font-medium">סינון לפי מחלקה:</span>
                     <div class="flex gap-1.5" id="team-filter-buttons">
                         <button onclick="filterTeam('ALL')" class="team-btn active px-2.5 py-1 rounded-lg bg-brand-600 text-white font-medium">הכל</button>
-                        <button onclick="filterTeam('1')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">צוות 1</button>
-                        <button onclick="filterTeam('2')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">צוות 2</button>
-                        <button onclick="filterTeam('3')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">צוות 3</button>
+                        <button onclick="filterTeam('1')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">מחלקה 1</button>
+                        <button onclick="filterTeam('2')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">מחלקה 2</button>
+                        <button onclick="filterTeam('3')" class="team-btn px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">מחלקה 3</button>
                     </div>
                 </div>
 
@@ -214,7 +212,7 @@
                                 <h2 id="soldier-name" class="text-lg font-bold text-white leading-tight">--</h2>
                                 <div class="flex items-center gap-2 mt-1">
                                     <span id="soldier-team" class="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700">
-                                         צוות --
+                                         מחלקה --
                                     </span>
                                     <span id="current-status-badge" class="px-2 py-0.5 rounded-md text-xs font-semibold flex items-center gap-1">
                                         <!-- Dynamic status -->
