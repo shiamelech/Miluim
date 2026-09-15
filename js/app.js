@@ -235,7 +235,7 @@ if (currentViewMode === 'month') {
 } else {
     renderTimeline();
 }
-
+        }
         function calculateUpcomingExit() {
             let nextExitDate = null;
             let daysUntil = null;
@@ -288,6 +288,61 @@ if (currentViewMode === 'month') {
         renderTimeline();
     }
         }
+
+
+        function switchView(mode) {
+    currentViewMode = mode;
+
+    const timeline = document.getElementById('timeline-container');
+    const month = document.getElementById('month-container');
+
+    const listBtn = document.getElementById('view-btn-list');
+    const monthBtn = document.getElementById('view-btn-month');
+
+    if (mode === 'month') {
+
+        timeline.classList.add('hidden');
+        month.classList.remove('hidden');
+
+        listBtn.classList.remove(
+            'bg-brand-600',
+            'text-white',
+            'font-semibold'
+        );
+        listBtn.classList.add('text-slate-400');
+
+        monthBtn.classList.add(
+            'bg-brand-600',
+            'text-white',
+            'font-semibold'
+        );
+        monthBtn.classList.remove('text-slate-400');
+
+        renderMonthCalendar();
+
+    } else {
+
+        timeline.classList.remove('hidden');
+        month.classList.add('hidden');
+
+        monthBtn.classList.remove(
+            'bg-brand-600',
+            'text-white',
+            'font-semibold'
+        );
+        monthBtn.classList.add('text-slate-400');
+
+        listBtn.classList.add(
+            'bg-brand-600',
+            'text-white',
+            'font-semibold'
+        );
+        listBtn.classList.remove('text-slate-400');
+
+        renderTimeline();
+    }
+}
+
 
              function renderMonthCalendar() {
     const container = document.getElementById('month-container');
