@@ -302,7 +302,7 @@
 
         <!-- Dynamic Footer info -->
         <footer class="mt-auto pt-6 text-center text-xs text-slate-600">
-            <span>לוח יציאות מעודכן ספטמבר-אוקטובר 2024</span>
+            <span> יציאות 2026</span>
         </footer>
     </div>
 
@@ -576,7 +576,7 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="text-xs font-semibold text-white truncate">${s.fullName}</div>
-                        <div class="text-[10px] text-slate-400">צוות ${s.team}</div>
+                        <div class="text-[10px] text-slate-400">מחלקה ${s.team}</div>
                     </div>
                 </button>
             `).join('');
@@ -614,7 +614,7 @@
 
             // Render Header Card info
             document.getElementById('soldier-name').textContent = currentSoldier.fullName;
-            document.getElementById('soldier-team').textContent = `צוות ${currentSoldier.team}`;
+            document.getElementById('soldier-team').textContent = `מחלקה ${currentSoldier.team}`;
             document.getElementById('soldier-avatar').textContent = `${currentSoldier.firstName[0]}${currentSoldier.lastName[0] || ''}`;
 
             // Current status calculation
@@ -771,7 +771,7 @@
                                     <span class="text-sm font-semibold text-white">יום ${dateObj.day}</span>
                                     ${isToday ? '<span class="bg-brand-500/20 text-brand-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-brand-500/30">היום</span>' : ''}
                                 </div>
-                                <span class="text-[11px] text-slate-400">${dateObj.month === '09' ? 'ספטמבר' : 'אוקטובר'} 2024</span>
+                                <span class="text-[11px] text-slate-400">${dateObj.month === '09' ? 'ספטמבר' : 'אוקטובר'} 2026 תשפ"ז</span>
                             </div>
                         </div>
 
@@ -810,7 +810,7 @@
         function shareWhatsApp() {
             if (!currentSoldier) return;
 
-            let text = `📅 *לוח יציאות אישי - ${currentSoldier.fullName} (צוות ${currentSoldier.team})*\n\n`;
+            let text = `📅 *לוח יציאות אישי - ${currentSoldier.fullName} (מחלקה ${currentSoldier.team})*\n\n`;
             
             DATES_LIST.forEach((d, i) => {
                 const st = currentSoldier.schedule[i] || 'אין נתון';
@@ -818,7 +818,7 @@
                 text += `${d.date} (${d.day}): ${st} ${icon}\n`;
             });
 
-            text += `\nנוצר באמצעות אפליקציית לוח יציאות אישי`;
+            text += `נוצר באמצעות אפליקציית לוח יציאות אישי`;
 
             // Copy to Clipboard
             const dummy = document.createElement("textarea");
