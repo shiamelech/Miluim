@@ -526,8 +526,9 @@
 
         const STORAGE_KEY = "military_schedule_selected_soldier_id";
         let currentSoldier = null;
-        let selectedTeamFilter = "ALL";
-        let selectedStatusFilter = "ALL";
+let selectedTeamFilter = "ALL";
+let selectedStatusFilter = "ALL";
+let currentViewMode = "list";
 
         // Calculate "Today" relative to dataset scope or real calendar date
         function getTodayIndex() {
