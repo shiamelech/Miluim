@@ -787,9 +787,12 @@ let currentViewMode = "list";
             // Calculate Upcoming Exit Date to Home
             calculateUpcomingExit();
 
-            // Render Timeline List
-            renderTimeline();
-        }
+            // Render current schedule view
+if (currentViewMode === 'month') {
+    renderMonthCalendar();
+} else {
+    renderTimeline();
+}
 
         function calculateUpcomingExit() {
             let nextExitDate = null;
