@@ -826,19 +826,25 @@ if (currentViewMode === 'month') {
         }
 
         function setDisplayFilter(filter) {
-            selectedStatusFilter = filter;
-            document.querySelectorAll('.status-filter-btn').forEach(btn => {
-                btn.classList.remove('active', 'bg-slate-800', 'text-white', 'font-semibold');
-                btn.classList.add('text-slate-400');
-            });
+    selectedStatusFilter = filter;
 
-            const activeBtn = document.getElementById(`filter-btn-${filter}`);
-            if (activeBtn) {
-                activeBtn.classList.add('active', 'bg-slate-800', 'text-white', 'font-semibold');
-                activeBtn.classList.remove('text-slate-400');
-            }
+    document.querySelectorAll('.status-filter-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-slate-800', 'text-white', 'font-semibold');
+        btn.classList.add('text-slate-400');
+    });
 
-            renderTimeline();
+    const activeBtn = document.getElementById(`filter-btn-${filter}`);
+
+    if (activeBtn) {
+        activeBtn.classList.add('active', 'bg-slate-800', 'text-white', 'font-semibold');
+        activeBtn.classList.remove('text-slate-400');
+    }
+
+    if (currentViewMode === 'month') {
+        renderMonthCalendar();
+    } else {
+        renderTimeline();
+    }
         }
 
         function renderTimeline() {
