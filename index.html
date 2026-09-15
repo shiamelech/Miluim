@@ -1136,17 +1136,53 @@ if (currentViewMode === 'month') {
         }
 
         function scrollToToday() {
-            setDisplayFilter('ALL');
-            setTimeout(() => {
-                const todayEl = document.getElementById(`date-card-${TODAY_INDEX}`);
-                if (todayEl) {
-                    todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    todayEl.classList.add('ring-2', 'ring-brand-400');
-                    setTimeout(() => {
-                        todayEl.classList.remove('ring-2', 'ring-brand-400');
-                    }, 1500);
-                }
-            }, 50);
+    setDisplayFilter('ALL');
+
+    setTimeout(() => {
+
+        let todayEl;
+
+        if (currentViewMode === 'month') {
+            todayEl = document.getElementById(`month-date-${TODAY_INDEX}`);
+        } else {
+            todayEl = document.getElementById(`date-card-${TODAY_INDEX}`);
+        }
+
+        if (todayEl) {
+
+            todayEl.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            if (currentViewMode === 'month') {
+
+                todayEl.classList.add('ring-2', 'ring-brand-400');
+
+                setTimeout(() => {
+                    todayEl.classList.remove(
+                        'ring-2',
+                        'ring-brand-400'
+                    );
+                }, 1500);
+
+            } else {
+
+                todayEl.classList.add(
+                    'ring-2',
+                    'ring-brand-400'
+                );
+
+                setTimeout(() => {
+                    todayEl.classList.remove(
+                        'ring-2',
+                        'ring-brand-400'
+                    );
+                }, 1500);
+            }
+        }
+
+    }, 50);
         }
 
         function shareWhatsApp() {
