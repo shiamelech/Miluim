@@ -847,6 +847,207 @@ if (currentViewMode === 'month') {
     }
         }
 
+             function renderMonthCalendar() {
+    const container = document.getElementById('month-container');
+
+    if (!currentSoldier) return;
+
+    /*
+     * The current dataset contains September and October 2026.
+     * We create a calendar for every month represented in DATES_LIST.
+     */
+
+    const months = [...new Set(DATES_LIST.map(d => d.month))];
+
+    let html = '';
+
+    const monthNames = {
+        '09': 'ספטמבר',
+        '10': 'אוקטובר'
+    };
+
+    const weekdayHeaders = [
+        'א',
+        'ב',
+        'ג',
+        'ד',
+        'ה',
+        'ו',
+        'ש'
+    ];
+
+    months.forEach(monthNumber => {
+
+        const monthDates = DATES_LIST.filter(d => d.month === monthNumber);
+
+        if (monthDates.length === 0) return;
+
+        const year = 2026;
+        const monthIndex = Number(monthNumber) - 1;
+
+        // First day of the month
+        const firstDate = new Date(year, monthIndex, 1);
+
+        // JS: Sunday=0, Monday=1 ... Saturday=6
+        const firstDayOfWeek = firstDate.getDay();
+
+        html += `
+            <div class="glass-card rounded-2xl p-3 border-slate-800/80 mb-3">
+
+                <!-- Month Header -->
+                <div class="flex items-center justify-between mb-3 px-1">
+
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-brand-600/20 text-brand-300 flex items-center justify-center">
+                            <i class="fas fa-calendar-days text-xs"></i>
+                        </div>
+
+                        <div>
+                            <div class="text-sm font-bold text-white">
+                                ${monthNames[monthNumber] || monthNumber} 2026
+                            </div>
+
+                            <div class="text-[10px] text-slate-500">
+                                לוח יציאות
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="flex items-center gap-2 text-[9px]">
+
+                        <div class="flex items-center gap-1 text-slate-400">
+                            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                            בסיס
+                        </div>
+
+                        <div class="flex items-center gap-1 text-slate-400">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            בית
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Weekday Headers -->
+                <div class="month-calendar mb-1">
+                    ${weekdayHeaders.map(day => `
+                        <div class="month-weekday">${day}</div>
+                    `).join('')}
+                </div>
+
+                <!-- Days -->
+                <div class="month-calendar">
+        `;
+
+        // Empty cells before the first day
+        for (let i = 0; i < firstDayOfWeek; i++) {
+            html += `
+                <div class="month-day border-transparent bg-transparent"></div>
+            `;
+        }
+
+        /*
+         * Create all days of the actual month.
+         * Days outside the current dataset remain empty.
+         */
+        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+
+        for (let day = 1; day <= daysInMonth; day++) {
+
+            const dateString =
+                `${String(day).padStart(2, '0')}/${monthNumber}`;
+
+            const dateIndex =
+                DATES_LIST.findIndex(d => d.date === dateString);
+
+            const hasData = dateIndex !== -1;
+
+            const status = hasData
+                ? (currentSoldier.schedule[dateIndex] || '')
+                : '';
+
+            const isToday =
+                hasData && dateIndex === TODAY_INDEX;
+
+            // Apply status filter
+            let hiddenByFilter = false;
+
+            if (
+                selectedStatusFilter === 'בסיס' &&
+                status !== 'בסיס'
+            ) {
+                hiddenByFilter = true;
+            }
+
+            if (
+                selectedStatusFilter === 'בית' &&
+                status !== 'בית'
+            ) {
+                hiddenByFilter = true;
+            }
+
+            if (hiddenByFilter) {
+                html += `
+                    <div class="month-day month-day-empty opacity-30">
+                        <span class="month-day-number">${day}</span>
+                    </div>
+                `;
+                continue;
+            }
+
+            let dayClass = 'month-day month-day-empty';
+            let statusText = '';
+
+            if (status === 'בסיס') {
+                dayClass = 'month-day month-day-base';
+                statusText = 'בסיס';
+            } else if (status === 'בית') {
+                dayClass = 'month-day month-day-home';
+                statusText = 'בית';
+            } else if (status.trim() !== '') {
+                dayClass = 'month-day month-day-special';
+                statusText = status;
+            }
+
+            if (isToday) {
+                dayClass += ' month-day-today';
+            }
+
+            html += `
+                <div
+                    class="${dayClass}"
+                    ${hasData ? `id="month-date-${dateIndex}"` : ''}
+                >
+
+                    ${isToday ? `
+                        <span class="month-day-label">היום</span>
+                    ` : ''}
+
+                    <span class="month-day-number">
+                        ${day}
+                    </span>
+
+                    ${statusText ? `
+                        <span class="month-day-status">
+                            ${statusText}
+                        </span>
+                    ` : ''}
+
+                </div>
+            `;
+        }
+
+        html += `
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+        }
+            
         function renderTimeline() {
             const container = document.getElementById('timeline-container');
             if (!currentSoldier) return;
