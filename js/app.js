@@ -53,20 +53,22 @@ let currentViewMode = "list";
             input.focus();
         }
 
-        function filterTeam(team) {
-            selectedTeamFilter = team;
-            
-            // Update button styles
-            document.querySelectorAll('#team-filter-buttons button').forEach(btn => {
-                btn.classList.remove('bg-brand-600', 'text-white');
-                btn.classList.add('bg-slate-800', 'text-slate-300');
-            });
-            event.target.classList.remove('bg-slate-800', 'text-slate-300');
-            event.target.classList.add('bg-brand-600', 'text-white');
+        
+        // ב-HTML:
+// onclick="filterTeam(event, 'ALL')"
 
-            renderSoldiersGrid();
-        }
+// ב-JS:
+function filterTeam(evt, team) {
+    selectedTeamFilter = team;
+    document.querySelectorAll('#team-filter-buttons button').forEach(btn => {
+        btn.classList.remove('bg-brand-600', 'text-white');
+        btn.classList.add('bg-slate-800', 'text-slate-300');
+    });
+    evt.target.classList.remove('bg-slate-800', 'text-slate-300');
+    evt.target.classList.add('bg-brand-600', 'text-white');
 
+    renderSoldiersGrid();
+}
         function onSearchInput(query) {
             const clearBtn = document.getElementById('clear-search-btn');
             const autocompleteList = document.getElementById('autocomplete-list');
