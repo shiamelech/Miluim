@@ -719,4 +719,4 @@ if (currentViewMode === 'month') {
             }, 3000);
         }
 
-}
+
