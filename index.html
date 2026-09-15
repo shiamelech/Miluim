@@ -847,6 +847,71 @@ if (currentViewMode === 'month') {
     }
         }
 
+         function switchView(mode) {
+    currentViewMode = mode;
+
+    const timeline = document.getElementById('timeline-container');
+    const month = document.getElementById('month-container');
+
+    const listBtn = document.getElementById('view-btn-list');
+    const monthBtn = document.getElementById('view-btn-month');
+
+    if (mode === 'month') {
+
+        // Hide list
+        timeline.classList.add('hidden');
+
+        // Show month
+        month.classList.remove('hidden');
+
+        // Update buttons
+        listBtn.classList.remove(
+            'bg-brand-600',
+            'text-white',
+            'font-semibold'
+        );
+        listBtn.classList.add('text-slate-400');
+
+        monthBtn.classList.add(
+            'bg-brand-600',
+            'text-white',
+            'font-semibold'
+        );
+        monthBtn.classList.remove('text-slate-400');
+
+        // Render monthly calendar
+        renderMonthCalendar();
+
+    } else {
+
+        // Show list
+        timeline.classList.remove('hidden');
+
+        // Hide month
+        month.classList.add('hidden');
+
+        // Update buttons
+        monthBtn.classList.remove(
+            'bg-brand-600',
+            'text-white',
+            'font-semibold'
+        );
+        monthBtn.classList.add('text-slate-400');
+
+        listBtn.classList.add(
+            'bg-brand-600',
+            'text-white',
+            'font-semibold'
+        );
+        listBtn.classList.remove('text-slate-400');
+
+        // Render list
+        renderTimeline();
+    }
+}
+
+
+        
              function renderMonthCalendar() {
     const container = document.getElementById('month-container');
 
