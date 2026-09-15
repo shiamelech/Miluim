@@ -375,18 +375,48 @@
                 </div>
 
                 <!-- Filter and View Controls -->
-                <div class="flex items-center justify-between gap-2 mt-1">
-                    <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
-                        <button onclick="setDisplayFilter('ALL')" id="filter-btn-ALL" class="status-filter-btn active px-3 py-1 rounded-lg text-slate-300 font-medium">הכל</button>
-                        <button onclick="setDisplayFilter('בסיס')" id="filter-btn-בסיס" class="status-filter-btn px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200">בסיס</button>
-                        <button onclick="setDisplayFilter('בית')" id="filter-btn-בית" class="status-filter-btn px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200">בית</button>
-                    </div>
+                <!-- Filter and View Controls -->
+<div class="flex flex-col gap-2 mt-1">
 
-                    <button onclick="scrollToToday()" class="px-3 py-1.5 rounded-xl bg-brand-600/20 text-brand-300 border border-brand-500/30 text-xs font-semibold flex items-center gap-1.5 hover:bg-brand-600/30 active:scale-95 transition">
-                        <i class="fas fa-location-crosshairs text-xs"></i>
-                        <span>היום</span>
-                    </button>
-                </div>
+    <div class="flex items-center justify-between gap-2">
+
+        <!-- Status Filters -->
+        <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+            <button onclick="setDisplayFilter('ALL')" id="filter-btn-ALL" class="status-filter-btn active px-3 py-1 rounded-lg text-slate-300 font-medium">הכל</button>
+            <button onclick="setDisplayFilter('בסיס')" id="filter-btn-בסיס" class="status-filter-btn px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200">בסיס</button>
+            <button onclick="setDisplayFilter('בית')" id="filter-btn-בית" class="status-filter-btn px-3 py-1 rounded-lg text-slate-400 hover:text-slate-200">בית</button>
+        </div>
+
+        <!-- Today Button -->
+        <button onclick="scrollToToday()" class="px-3 py-1.5 rounded-xl bg-brand-600/20 text-brand-300 border border-brand-500/30 text-xs font-semibold flex items-center gap-1.5 hover:bg-brand-600/30 active:scale-95 transition">
+            <i class="fas fa-location-crosshairs text-xs"></i>
+            <span>היום</span>
+        </button>
+
+    </div>
+
+    <!-- View Switch -->
+    <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs w-full">
+
+        <button
+            onclick="switchView('list')"
+            id="view-btn-list"
+            class="view-mode-btn flex-1 px-3 py-1.5 rounded-lg bg-brand-600 text-white font-semibold flex items-center justify-center gap-1.5 transition">
+            <i class="fas fa-list text-[10px]"></i>
+            <span>רשימה</span>
+        </button>
+
+        <button
+            onclick="switchView('month')"
+            id="view-btn-month"
+            class="view-mode-btn flex-1 px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 transition">
+            <i class="fas fa-calendar-days text-[10px]"></i>
+            <span>חודש</span>
+        </button>
+
+    </div>
+
+</div>
 
                 <!-- Schedule List Timeline -->
                 <div class="flex flex-col gap-2 mt-1" id="timeline-container">
