@@ -153,13 +153,25 @@ body {
     color: #0f172a !important;
   }
 
+  /* התאמת פס הגלילה */
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* כרטיסיות Glassmorphism */
   .glass-card {
     background-color: rgba(255, 255, 255, 0.85) !important;
     border-color: #cbd5e1 !important;
     color: #0f172a !important;
   }
 
-  /* התאמת צבעי טקסט כהים על רקע בהיר */
+  /* התאמת מחלקות Tailwind כלליות */
   .text-white {
     color: #0f172a !important;
   }
@@ -170,10 +182,66 @@ body {
     color: #334155 !important;
   }
 
-  /* התאמת אלמנטים של רקע */
   .bg-slate-800, 
   .bg-slate-900, 
   .bg-slate-950 {
     background-color: #e2e8f0 !important;
+  }
+
+  /* ===== התאמת הלוח החודשי למצב בהיר ===== */
+  .month-weekday {
+    color: #64748b;
+  }
+
+  .month-day {
+    border-color: #cbd5e1;
+  }
+
+  .month-day-number {
+    color: #0f172a;
+  }
+
+  /* יום בסיס */
+  .month-day-base {
+    background-color: #e0e7ff !important;
+    border-color: #c7d2fe !important;
+  }
+  .month-day-base .month-day-status {
+    color: #3730a3 !important;
+  }
+
+  /* יום בית */
+  .month-day-home {
+    background-color: #d1fae5 !important;
+    border-color: #a7f3d0 !important;
+  }
+  .month-day-home .month-day-status {
+    color: #065f46 !important;
+  }
+
+  /* יום מיוחד */
+  .month-day-special {
+    background-color: #fef3c7 !important;
+    border-color: #fde68a !important;
+  }
+  .month-day-special .month-day-status {
+    color: #92400e !important;
+  }
+
+  /* יום ריק / ללא נתון */
+  .month-day-empty {
+    background-color: #f1f5f9 !important;
+  }
+  .month-day-empty .month-day-number {
+    color: #94a3b8;
+  }
+
+  /* יום נוכחי (היום) */
+  .month-day-today {
+    border-color: #4f46e5 !important;
+    box-shadow: 0 0 0 1px #4f46e5, 0 0 10px rgba(79, 70, 229, 0.2);
+  }
+  .month-day-today .month-day-number {
+    color: #4f46e5;
   }
 }
