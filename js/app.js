@@ -5,7 +5,37 @@ let currentSoldier = null;
 let selectedTeamFilter = "ALL";
 let selectedStatusFilter = "ALL";
 let currentViewMode = "list";
+// אוגר נתונים עבור התאריכים העבריים והחגים
+let hebrewDataCache = {};
 
+// שליפת נתונים מ-Hebcal עבור חודשי הלוח
+async function fetchHebrewCalendarData() {
+    const year = 2026;
+    const months = [...new Set(DATES_LIST.map(d => d.month))];
+
+    for (const month of months) {
+        const url = `https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&ss=on&i=on&lang=he&d=on&year=${year}&month=${Number(month)}`;
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+
+            data.items.forEach(item => {
+                const dateKey = item.date.split('T')[0]; // פורמט YYYY-MM-DD
+                if (!hebrewDataCache[dateKey]) {
+                    hebrewDataCache[dateKey] = { events: [], hebrewDate: '' };
+                }
+
+                if (item.category === 'hebrewDate') {
+                    hebrewDataCache[dateKey].hebrewDate = item.hebrew;
+                } else {
+                    hebrewDataCache[dateKey].events.push(item.hebrew || item.title);
+                }
+            });
+        } catch (e) {
+            console.error("Error fetching Hebrew calendar data:", e);
+        }
+    }
+}
 // חישוב אינדקס "היום"
 function getTodayIndex() {
     const today = new Date();
