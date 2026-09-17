@@ -146,3 +146,34 @@ body {
     color: #a5b4fc;
     font-weight: 700;
 }
+/* התאמה אוטומטית למצב בהיר לפי הגדרות הטלפון */
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+  }
+
+  .glass-card {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+  }
+
+  /* התאמת צבעי טקסט כהים על רקע בהיר */
+  .text-white {
+    color: #0f172a !important;
+  }
+  
+  .text-slate-300, 
+  .text-slate-400, 
+  .text-slate-500 {
+    color: #334155 !important;
+  }
+
+  /* התאמת אלמנטים של רקע */
+  .bg-slate-800, 
+  .bg-slate-900, 
+  .bg-slate-950 {
+    background-color: #e2e8f0 !important;
+  }
+}
