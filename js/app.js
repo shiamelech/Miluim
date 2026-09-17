@@ -24,6 +24,10 @@ const TODAY_INDEX = getTodayIndex();
 // ==========================================
 
 function initializeApp() {
+    // ריענון תצוגה בזמן אמת במידה והמשתמש שינה מצב תצוגה בטלפון
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
+        if (currentSoldier) renderDashboard();
+    });
     // הגדרת מצב הבית בהיסטוריה
     history.replaceState({ view: 'search' }, '', window.location.pathname);
     
