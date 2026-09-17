@@ -22,18 +22,19 @@ let currentViewMode = "list";
         const TODAY_INDEX = getTodayIndex();
 
         // On Page Load Initialization
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedSoldierId = localStorage.getItem(STORAGE_KEY);
-            if (savedSoldierId) {
-                const found = SOLDIERS_DATA.find(s => s.id === savedSoldierId);
-                if (found) {
-                    selectSoldier(found, false);
-                    return;
-                }
-            }
-            // Show search screen if no saved soldier
-            showSearchScreen();
-        });
+      // אתחול האפליקציה לאחר טעינת הנתונים מ-CSV
+function initializeApp() {
+    const savedSoldierId = localStorage.getItem(STORAGE_KEY);
+    if (savedSoldierId) {
+        const found = SOLDIERS_DATA.find(s => s.id === savedSoldierId);
+        if (found) {
+            selectSoldier(found, false);
+            return;
+        }
+    }
+    // הצגת מסך החיפוש אם לא נבחר חייל
+    showSearchScreen();
+}
 
         function showSearchScreen() {
             currentSoldier = null;
