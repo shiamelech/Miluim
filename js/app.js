@@ -99,14 +99,21 @@ window.addEventListener('popstate', (event) => {
 // onclick="filterTeam(event, 'ALL')"
 
 // ב-JS:
-function filterTeam(evt, team) {
+function filterTeam(team) {
     selectedTeamFilter = team;
+    
+    // איפוס עיצוב כל הכפתורים
     document.querySelectorAll('#team-filter-buttons button').forEach(btn => {
         btn.classList.remove('bg-brand-600', 'text-white');
         btn.classList.add('bg-slate-800', 'text-slate-300');
     });
-    evt.target.classList.remove('bg-slate-800', 'text-slate-300');
-    evt.target.classList.add('bg-brand-600', 'text-white');
+
+    // הדגשת הכפתור שנלחץ
+    if (window.event && window.event.currentTarget) {
+        const target = window.event.currentTarget;
+        target.classList.remove('bg-slate-800', 'text-slate-300');
+        target.classList.add('bg-brand-600', 'text-white');
+    }
 
     renderSoldiersGrid();
 }
