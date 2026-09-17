@@ -5,6 +5,7 @@ let currentSoldier = null;
 let selectedTeamFilter = "ALL";
 let selectedStatusFilter = "ALL";
 let currentViewMode = "list";
+
 // אוגר נתונים עבור התאריכים העבריים והחגים
 let hebrewDataCache = {};
 
@@ -36,6 +37,7 @@ async function fetchHebrewCalendarData() {
         }
     }
 }
+
 // חישוב אינדקס "היום"
 function getTodayIndex() {
     const today = new Date();
@@ -247,8 +249,13 @@ function renderSoldiersGrid(filteredList = null) {
 // תצוגת דשבורד וסטטיסטיקה
 // ==========================================
 
-function renderDashboard() {
+async function renderDashboard() {
     if (!currentSoldier) return;
+
+    // שליפת הנתונים העבריים מ-Hebcal אם הם טרם נטענו
+    if (Object.keys(hebrewDataCache).length === 0) {
+        await fetchHebrewCalendarData();
+    }
 
     document.getElementById('soldier-name').textContent = currentSoldier.fullName;
     document.getElementById('soldier-team').textContent = `מחלקה ${currentSoldier.team}`;
@@ -447,6 +454,11 @@ function renderMonthCalendar() {
             const status = hasData ? (currentSoldier.schedule[dateIndex] || '') : '';
             const isToday = hasData && dateIndex === TODAY_INDEX;
 
+            // מפתח תאריך למיפוי Hebcal
+            const fullDateKey = `${year}-${monthNumber}-${String(day).padStart(2, '0')}`;
+            const hebInfo = hebrewDataCache[fullDateKey] || { events: [], hebrewDate: '' };
+            const holidayName = hebInfo.events.length > 0 ? hebInfo.events[0] : '';
+
             let hiddenByFilter = false;
             if (selectedStatusFilter === 'בסיס' && status !== 'בסיס') hiddenByFilter = true;
             if (selectedStatusFilter === 'בית' && status !== 'בית') hiddenByFilter = true;
@@ -472,13 +484,16 @@ function renderMonthCalendar() {
             } else if (status.trim() !== '') {
                 dayClass = 'month-day month-day-special';
                 statusText = status;
+            } else if (holidayName) {
+                dayClass = 'month-day month-day-special';
+                statusText = holidayName;
             }
 
             if (isToday) dayClass += ' month-day-today';
 
             html += `
                 <div class="${dayClass}" ${hasData ? `id="month-date-${dateIndex}"` : ''}>
-                    ${isToday ? `<span class="month-day-label">היום</span>` : ''}
+                    <span class="month-day-label">${isToday ? 'היום' : (hebInfo.hebrewDate || '')}</span>
                     <span class="month-day-number">${day}</span>
                     ${statusText ? `<span class="month-day-status">${statusText}</span>` : ''}
                 </div>
@@ -506,6 +521,12 @@ function renderTimeline() {
 
         if (selectedStatusFilter === 'בסיס' && status !== 'בסיס') return;
         if (selectedStatusFilter === 'בית' && status !== 'בית') return;
+
+        // שליפת הנתון העברי והחג עבור התצוגה ברשימה
+        const formattedDay = dateObj.date.split('/')[0];
+        const fullDateKey = `2026-${dateObj.month}-${formattedDay}`;
+        const hebInfo = hebrewDataCache[fullDateKey] || { events: [], hebrewDate: '' };
+        const holidayTag = hebInfo.events.length > 0 ? ` • <span class="text-amber-400 font-medium">${hebInfo.events[0]}</span>` : '';
 
         let badgeHtml = '';
         let borderStyle = 'border-slate-800/80';
@@ -558,7 +579,9 @@ function renderTimeline() {
                             <span class="text-sm font-semibold text-white">יום ${dateObj.day}</span>
                             ${isToday ? '<span class="bg-brand-500/20 text-brand-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-brand-500/30">היום</span>' : ''}
                         </div>
-                        <span class="text-[11px] text-slate-400">${dateObj.month === '09' ? 'ספטמבר' : 'אוקטובר'} 2026 תשפ"ז</span>
+                        <span class="text-[11px] text-slate-400">
+                            ${hebInfo.hebrewDate ? hebInfo.hebrewDate : (dateObj.month === '09' ? 'ספטמבר' : 'אוקטובר')}${holidayTag}
+                        </span>
                     </div>
                 </div>
 
