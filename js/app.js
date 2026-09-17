@@ -395,7 +395,6 @@ function switchView(mode) {
 // ==========================================
 // רינדור לוח חודשי וטיימליין
 // ==========================================
-
 function renderMonthCalendar() {
     const container = document.getElementById('month-container');
     if (!currentSoldier) return;
@@ -457,7 +456,7 @@ function renderMonthCalendar() {
             const status = hasData ? (currentSoldier.schedule[dateIndex] || '') : '';
             const isToday = hasData && dateIndex === TODAY_INDEX;
 
-            // מפתח תאריך למיפוי Hebcal
+            // שליפת הנתון העברי והחג
             const fullDateKey = `${year}-${monthNumber}-${String(day).padStart(2, '0')}`;
             const hebInfo = hebrewDataCache[fullDateKey] || { events: [], hebrewDate: '' };
             const holidayName = hebInfo.events.length > 0 ? hebInfo.events[0] : '';
@@ -494,11 +493,22 @@ function renderMonthCalendar() {
 
             if (isToday) dayClass += ' month-day-today';
 
+            // תווית עליונה: תאריך עברי בכל יום (או "היום" בצירוף התאריך)
+            const topLabel = isToday 
+                ? (hebInfo.hebrewDate ? `היום (${hebInfo.hebrewDate})` : 'היום')
+                : (hebInfo.hebrewDate || '');
+
+            // תווית חג נוספת בתחתית התא כשיש גם סטטוס צבאי (בסיס/בית) וגם חג
+            const holidaySubText = ((status === 'בסיס' || status === 'בית') && holidayName) 
+                ? `<span class="text-[9px] text-amber-300/90 font-normal truncate block leading-none mt-0.5">${holidayName}</span>` 
+                : '';
+
             html += `
                 <div class="${dayClass}" ${hasData ? `id="month-date-${dateIndex}"` : ''}>
-                    <span class="month-day-label">${isToday ? 'היום' : (hebInfo.hebrewDate || '')}</span>
+                    <span class="month-day-label text-[9px] opacity-80 leading-tight block truncate">${topLabel}</span>
                     <span class="month-day-number">${day}</span>
                     ${statusText ? `<span class="month-day-status">${statusText}</span>` : ''}
+                    ${holidaySubText}
                 </div>
             `;
         }
