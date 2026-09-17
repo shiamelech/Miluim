@@ -1,60 +1,100 @@
 // לוגיקת האפליקציה בלבד.
-// כאן נמצאות החיפוש, הבחירה, הסינון, הרשימה, תצוגת החודש והשיתוף.
 
 const STORAGE_KEY = "military_schedule_selected_soldier_id";
-        let currentSoldier = null;
+let currentSoldier = null;
 let selectedTeamFilter = "ALL";
 let selectedStatusFilter = "ALL";
 let currentViewMode = "list";
 
-        // Calculate "Today" relative to dataset scope or real calendar date
-        function getTodayIndex() {
-            const today = new Date();
-            const day = String(today.getDate()).padStart(2, '0');
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const formatted = `${day}/${month}`;
-            
-            const idx = DATES_LIST.findIndex(d => d.date === formatted);
-            // If today falls outside dataset scope, pick nearest or default to index 1 (10/09)
-            return idx !== -1 ? idx : 1; 
-        }
-
-        const TODAY_INDEX = getTodayIndex();
-
-        // On Page Load Initialization
-      // אתחול האפליקציה לאחר טעינת הנתונים מ-CSV
-function initializeApp() {
-    const savedSoldierId = localStorage.getItem(STORAGE_KEY);
-    if (savedSoldierId) {
-        const found = SOLDIERS_DATA.find(s => s.id === savedSoldierId);
-        if (found) {
-            selectSoldier(found, false);
-            return;
-        }
-    }
-    // הצגת מסך החיפוש אם לא נבחר חייל
-    showSearchScreen();
+// חישוב אינדקס "היום"
+function getTodayIndex() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const formatted = `${day}/${month}`;
+    
+    const idx = DATES_LIST.findIndex(d => d.date === formatted);
+    return idx !== -1 ? idx : 1; 
 }
 
-        function showSearchScreen() {
-            currentSoldier = null;
-            document.getElementById('view-search').classList.remove('hidden');
-            document.getElementById('view-search').classList.add('flex');
-            document.getElementById('view-dashboard').classList.add('hidden');
-            document.getElementById('view-dashboard').classList.remove('flex');
-            document.getElementById('header-actions').classList.add('hidden');
-            
-            renderSoldiersGrid();
-        }
+const TODAY_INDEX = getTodayIndex();
 
-        function openSearchModal() {
-            showSearchScreen();
-            const input = document.getElementById('soldier-search-input');
-            input.value = '';
-            input.focus();
-        }
+// ==========================================
+// אתחול האפליקציה וניהול היסטוריה (Back Button)
+// ==========================================
 
-        
+// נקרא אוטומטית מ-data.js לאחר טעינת ה-CSV
+function initializeApp() {
+    // קובע את המצב ההתחלתי בהיסטוריית הדפדפן كمסך חיפוש
+    history.replaceState({ view: 'search' }, '', window.location.pathname);
+    
+    // תמיד פותח בדף הבית / מסך החיפוש
+    showSearchScreen(false);
+}
+
+// הצגת מסך החיפוש (דף הבית)
+function showSearchScreen(pushHistory = true) {
+    currentSoldier = null;
+    document.getElementById('view-search').classList.remove('hidden');
+    document.getElementById('view-search').classList.add('flex');
+    document.getElementById('view-dashboard').classList.add('hidden');
+    document.getElementById('view-dashboard').classList.remove('flex');
+    document.getElementById('header-actions').classList.add('hidden');
+    
+    renderSoldiersGrid();
+
+    // עדכון ההיסטוריה בדפדפן במידת הצורך
+    if (pushHistory && history.state?.view !== 'search') {
+        history.pushState({ view: 'search' }, '', window.location.pathname);
+    }
+}
+
+// לחיצה על כפתור "החלף חייל"
+function openSearchModal() {
+    if (history.state && history.state.view === 'dashboard') {
+        history.back(); // מחזיר אחורה בהיסטוריה למסך החיפוש
+    } else {
+        showSearchScreen(true);
+    }
+}
+
+// בחירת חייל והצגת הדשבורד
+function selectSoldier(soldier, pushHistory = true) {
+    currentSoldier = soldier;
+
+    // דחיפת מצב היסטוריה חדש - מאפשר לכפתור חזרה בנייד לחזור לחיפוש
+    if (pushHistory) {
+        history.pushState({ view: 'dashboard', soldierId: soldier.id }, '', '#soldier');
+    }
+
+    // סגירת חיפוש והצגת דשבורד
+    document.getElementById('autocomplete-list').classList.add('hidden');
+    document.getElementById('view-search').classList.add('hidden');
+    document.getElementById('view-search').classList.remove('flex');
+    
+    document.getElementById('view-dashboard').classList.remove('hidden');
+    document.getElementById('view-dashboard').classList.add('flex');
+    document.getElementById('header-actions').classList.remove('hidden');
+
+    renderDashboard();
+}
+
+// ==========================================
+// האזנה לכפתור "חזרה" (Back) בנייד / בדפדפן
+// ==========================================
+window.addEventListener('popstate', (event) => {
+    if (event.state && event.state.view === 'dashboard' && event.state.soldierId) {
+        const soldier = SOLDIERS_DATA.find(s => s.id === event.state.soldierId);
+        if (soldier) {
+            selectSoldier(soldier, false);
+        } else {
+            showSearchScreen(false);
+        }
+    } else {
+        // אם החזרנו אחורה למצב 'search'
+        showSearchScreen(false);
+    }
+});
         // ב-HTML:
 // onclick="filterTeam(event, 'ALL')"
 
