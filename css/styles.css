@@ -147,13 +147,20 @@ body {
     font-weight: 700;
 }
 /* התאמה אוטומטית למצב בהיר לפי הגדרות הטלפון */
+/* התאמה אוטומטית למצב בהיר לפי הגדרות הטלפון */
 @media (prefers-color-scheme: light) {
   body {
     background-color: #f8fafc !important;
     color: #0f172a !important;
   }
 
-  /* התאמת פס הגלילה */
+  /* 1. הדר וסרגלי ניווט */
+  header, nav, .sticky {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  /* 2. התאמת פס הגלילה */
   ::-webkit-scrollbar-track {
     background: #f1f5f9;
   }
@@ -164,31 +171,94 @@ body {
     background: #94a3b8;
   }
 
-  /* כרטיסיות Glassmorphism */
+  /* 3. כרטיסיות Glassmorphism וחיפוש */
   .glass-card {
-    background-color: rgba(255, 255, 255, 0.85) !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
     border-color: #cbd5e1 !important;
     color: #0f172a !important;
   }
 
-  /* התאמת מחלקות Tailwind כלליות */
+  input, select, textarea {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  input::placeholder {
+    color: #94a3b8 !important;
+  }
+
+  /* תפריט השלמה אוטומטית בחיפוש */
+  #autocomplete-list {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  #autocomplete-list > div:hover {
+    background-color: #f1f5f9 !important;
+  }
+
+  /* 4. ריבוע התאריך בתצוגת שורות (טיימליין) */
+  [id^="date-card-"] .w-11.h-11:not(.bg-brand-600) {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+  }
+
+  /* 5. תגיות סטטוס בתוך כרטיסיות הטיימליין */
+  .bg-indigo-950\/80 {
+    background-color: #e0e7ff !important;
+    color: #3730a3 !important;
+    border-color: #c7d2fe !important;
+  }
+  .bg-indigo-950\/80 i { color: #4f46e5 !important; }
+
+  .bg-emerald-950\/80 {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+    border-color: #a7f3d0 !important;
+  }
+  .bg-emerald-950\/80 i { color: #059669 !important; }
+
+  .bg-amber-950\/80 {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    border-color: #fde68a !important;
+  }
+  .bg-amber-950\/80 i { color: #d97706 !important; }
+
+  /* 6. לחצני סינון וכפתורים לא פעילים */
+  button.bg-slate-800,
+  .bg-slate-800 {
+    background-color: #e2e8f0 !important;
+    color: #334155 !important;
+  }
+
+  .bg-slate-900,
+  .bg-slate-950 {
+    background-color: #f1f5f9 !important;
+  }
+
+  /* 7. התאמת צבעי טקסט כלליים */
   .text-white {
     color: #0f172a !important;
   }
-  
-  .text-slate-300, 
-  .text-slate-400, 
+
+  .text-slate-200,
+  .text-slate-300,
+  .text-slate-400,
   .text-slate-500 {
     color: #334155 !important;
   }
 
-  .bg-slate-800, 
-  .bg-slate-900, 
-  .bg-slate-950 {
+  /* 8. אוואטרים עיגולי תיבות חיילים */
+  .w-9.h-9.bg-slate-800,
+  .w-7.h-7.bg-slate-800 {
     background-color: #e2e8f0 !important;
+    color: #1e293b !important;
   }
 
-  /* ===== התאמת הלוח החודשי למצב בהיר ===== */
+  /* ===== 9. הלוח החודשי ===== */
   .month-weekday {
     color: #64748b;
   }
@@ -201,7 +271,6 @@ body {
     color: #0f172a;
   }
 
-  /* יום בסיס */
   .month-day-base {
     background-color: #e0e7ff !important;
     border-color: #c7d2fe !important;
@@ -210,7 +279,6 @@ body {
     color: #3730a3 !important;
   }
 
-  /* יום בית */
   .month-day-home {
     background-color: #d1fae5 !important;
     border-color: #a7f3d0 !important;
@@ -219,7 +287,6 @@ body {
     color: #065f46 !important;
   }
 
-  /* יום מיוחד */
   .month-day-special {
     background-color: #fef3c7 !important;
     border-color: #fde68a !important;
@@ -228,7 +295,6 @@ body {
     color: #92400e !important;
   }
 
-  /* יום ריק / ללא נתון */
   .month-day-empty {
     background-color: #f1f5f9 !important;
   }
@@ -236,7 +302,6 @@ body {
     color: #94a3b8;
   }
 
-  /* יום נוכחי (היום) */
   .month-day-today {
     border-color: #4f46e5 !important;
     box-shadow: 0 0 0 1px #4f46e5, 0 0 10px rgba(79, 70, 229, 0.2);
