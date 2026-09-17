@@ -10,6 +10,7 @@ let currentViewMode = "list";
 let hebrewDataCache = {};
 
 // שליפת נתונים מ-Hebcal עבור חודשי הלוח
+// שליפת נתונים מ-Hebcal עבור חודשי הלוח
 async function fetchHebrewCalendarData() {
     const year = 2026;
     const months = [...new Set(DATES_LIST.map(d => d.month))];
@@ -27,7 +28,9 @@ async function fetchHebrewCalendarData() {
                 }
 
                 if (item.category === 'hebrewDate') {
-                    hebrewDataCache[dateKey].hebrewDate = item.hebrew;
+                    // הסרת ניקוד ושנה לקבלת תאריך עברי נקי וקומפקטי (למשל: "א' תשרי")
+                    let cleanHeb = item.hebrew.replace(/[\u0591-\u05C7]/g, '').replace(/\s+תש[א-ת"]+$/, '');
+                    hebrewDataCache[dateKey].hebrewDate = cleanHeb;
                 } else {
                     hebrewDataCache[dateKey].events.push(item.hebrew || item.title);
                 }
