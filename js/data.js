@@ -42,7 +42,7 @@ let SOLDIERS_DATA = [];
 
 
 // כתובת קובץ ה-CSV
-const CSV_FILE = "./data/יציאות.csv";
+const CSV_FILE = "./data/יציאות א מעודכן.csv";
 
 
 // ==========================================
