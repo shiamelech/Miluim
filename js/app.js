@@ -59,6 +59,7 @@ let TODAY_INDEX = 0;
 // ==========================================
 
 function initializeApp() {
+    TODAY_INDEX = getTodayIndex();
     // ריענון תצוגה בזמן אמת במידה והמשתמש שינה מצב תצוגה בטלפון
     window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
         if (currentSoldier) renderDashboard();
