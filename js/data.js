@@ -1,88 +1,98 @@
-// נתוני האפליקציה בלבד.
-// כדי לעדכן חיילים או תאריכים – עורכים רק את הקובץ הזה.
-
-const DATES_LIST = [
-    { date: "09/09", day: "רביעי", month: "09", iso: "2026-09-09" },
-    { date: "10/09", day: "חמישי", month: "09", iso: "2026-09-10" },
-    { date: "11/09", day: "שישי", month: "09", iso: "2026-09-11" },
-    { date: "12/09", day: "שבת", month: "09", iso: "2026-09-12" },
-    { date: "13/09", day: "ראשון", month: "09", iso: "2026-09-13" },
-    { date: "14/09", day: "שני", month: "09", iso: "2026-09-14" },
-    { date: "15/09", day: "שלישי", month: "09", iso: "2026-09-15" },
-    { date: "16/09", day: "רביעי", month: "09", iso: "2026-09-16" },
-    { date: "17/09", day: "חמישי", month: "09", iso: "2026-09-17" },
-    { date: "18/09", day: "שישי", month: "09", iso: "2026-09-18" },
-    { date: "19/09", day: "שבת", month: "09", iso: "2026-09-19" },
-    { date: "20/09", day: "ראשון", month: "09", iso: "2026-09-20" },
-    { date: "21/09", day: "שני", month: "09", iso: "2026-09-21" },
-    { date: "22/09", day: "שלישי", month: "09", iso: "2026-09-22" },
-    { date: "23/09", day: "רביעי", month: "09", iso: "2026-09-23" },
-    { date: "24/09", day: "חמישי", month: "09", iso: "2026-09-24" },
-    { date: "25/09", day: "שישי", month: "09", iso: "2026-09-25" },
-    { date: "26/09", day: "שבת", month: "09", iso: "2026-09-26" },
-    { date: "27/09", day: "ראשון", month: "09", iso: "2026-09-27" },
-    { date: "28/09", day: "שני", month: "09", iso: "2026-09-28" },
-    { date: "29/09", day: "שלישי", month: "09", iso: "2026-09-29" },
-    { date: "30/09", day: "רביעי", month: "09", iso: "2026-09-30" },
-    { date: "01/10", day: "חמישי", month: "10", iso: "2026-10-01" },
-    { date: "02/10", day: "שישי", month: "10", iso: "2026-10-02" },
-    { date: "03/10", day: "שבת", month: "10", iso: "2026-10-03" },
-    { date: "04/10", day: "ראשון", month: "10", iso: "2026-10-04" },
-    { date: "05/10", day: "שני", month: "10", iso: "2026-10-05" },
-    { date: "06/10", day: "שלישי", month: "10", iso: "2026-10-06" }
-];
-
-
-        // Database parsed directly from "יציאות א מעודכן.csv"
-      // ==========================================
-// נתוני חיילים נטענים מקובץ CSV
+// ==========================================
+// נתוני האפליקציה - טעינה מקבצי CSV
 // ==========================================
 
+let DATES_LIST = [];
 let SOLDIERS_DATA = [];
 
-
-// כתובת קובץ ה-CSV
-const CSV_FILE = "./data/יציאות א מעודכן.csv";
+// שני קבצי הנתונים
+const CSV_FILE_A = "./data/יציאות א מעודכן(3).csv";
+const CSV_FILE_B = "./data/יציאות סבב ב לפרסום.csv";
 
 
 // ==========================================
-// טעינת CSV
+// טעינת שני קבצי ה-CSV
 // ==========================================
 
 async function loadSoldiersData() {
     try {
-        const response = await fetch(CSV_FILE);
+        console.log("טוען קובץ א...");
+        console.log("טוען קובץ ב...");
 
-        if (!response.ok) {
+        const [responseA, responseB] = await Promise.all([
+            fetch(CSV_FILE_A),
+            fetch(CSV_FILE_B)
+        ]);
+
+        if (!responseA.ok) {
             throw new Error(
-                `לא ניתן לטעון את קובץ ה-CSV: ${response.status}`
+                `לא ניתן לטעון את קובץ א: ${responseA.status}`
             );
         }
 
-        const csvText = await response.text();
+        if (!responseB.ok) {
+            throw new Error(
+                `לא ניתן לטעון את קובץ ב: ${responseB.status}`
+            );
+        }
 
-        SOLDIERS_DATA = parseCSV(csvText);
+        const csvTextA = await responseA.text();
+        const csvTextB = await responseB.text();
 
-        console.log(
-            `נטענו ${SOLDIERS_DATA.length} חיילים מקובץ ה-CSV`
+        console.log("קובץ א נטען בהצלחה");
+        console.log("קובץ ב נטען בהצלחה");
+
+        // פענוח שני הקבצים
+        const parsedA = parseCSVFile(csvTextA);
+        const parsedB = parseCSVFile(csvTextB);
+
+        console.log(`קובץ א: ${parsedA.soldiers.length} חיילים`);
+        console.log(`קובץ ב: ${parsedB.soldiers.length} חיילים`);
+
+        // יצירת רשימת התאריכים המלאה
+        buildDatesList(
+            parsedA.dates,
+            parsedB.dates
         );
 
-        // לאחר שהנתונים נטענו,
-        // מפעילים את האפליקציה
+        // חיבור שני הקבצים
+        SOLDIERS_DATA = mergeSoldiers(
+            parsedA.soldiers,
+            parsedB.soldiers
+        );
+
+        console.log(
+            `סה"כ נטענו ${SOLDIERS_DATA.length} חיילים`
+        );
+
+        console.log(
+            `סה"כ ${DATES_LIST.length} תאריכים`
+        );
+
+        // לאחר שהנתונים נטענו - מתחילים את האפליקציה
         initializeApp();
 
     } catch (error) {
-        console.error("שגיאה בטעינת CSV:", error);
 
-        const container = document.getElementById("soldiers-grid");
+        console.error(
+            "שגיאה בטעינת נתוני CSV:",
+            error
+        );
+
+        const container =
+            document.getElementById("soldiers-grid");
 
         if (container) {
             container.innerHTML = `
-                <div class="text-center p-6 text-red-400">
+                <div class="col-span-2 text-center p-6 text-red-400">
                     <i class="fas fa-exclamation-triangle mb-2"></i>
-                    <div>לא ניתן לטעון את נתוני החיילים</div>
+
+                    <div>
+                        לא ניתן לטעון את נתוני החיילים
+                    </div>
+
                     <div class="text-sm mt-2 text-slate-400">
-                        בדוק שקובץ ה-CSV נמצא במקום הנכון
+                        בדוק שקבצי ה-CSV נמצאים בתיקיית data
                     </div>
                 </div>
             `;
@@ -92,12 +102,11 @@ async function loadSoldiersData() {
 
 
 // ==========================================
-// פענוח CSV
+// פענוח קובץ CSV
 // ==========================================
 
-function parseCSV(csvText) {
+function parseCSVFile(csvText) {
 
-    // מנקה BOM וירידות שורה
     csvText = csvText
         .replace(/^\uFEFF/, "")
         .replace(/\r/g, "");
@@ -107,79 +116,27 @@ function parseCSV(csvText) {
         .filter(line => line.trim() !== "");
 
     if (lines.length < 2) {
-        console.error("קובץ ה-CSV ריק או לא תקין");
-        return [];
+        return {
+            dates: [],
+            soldiers: []
+        };
     }
 
+    const headers = parseCSVLine(lines[0])
+        .map(header => header.trim());
 
-    // ========================================
-    // שורת הכותרות
-    // ========================================
+    // שלוש העמודות הראשונות:
+    // שם משפחה
+    // שם פרטי
+    // מחלקה / צוות
 
-    const headers = parseCSVLine(lines[0]);
-
-
-    // התאריכים נמצאים מהעמודה הרביעית והלאה
     const dateHeaders = headers.slice(3);
 
-
-    // ========================================
-    // יצירת DATES_LIST מתוך ה-CSV
-    // ========================================
-
-    DATES_LIST.length = 0;
-
-    dateHeaders.forEach(date => {
-
-        const cleanDate = date.trim();
-
-        if (!cleanDate) {
-            return;
-        }
-
-        const parts = cleanDate.split("/");
-
-        if (parts.length !== 2) {
-            return;
-        }
-
-        const day = parts[0].padStart(2, "0");
-        const month = parts[1].padStart(2, "0");
-
-        const year =
-            month === "09" ? "2026" : "2026";
-
-        const iso = `${year}-${month}-${day}`;
-
-        const dateObject = new Date(iso);
-
-        const days = [
-            "ראשון",
-            "שני",
-            "שלישי",
-            "רביעי",
-            "חמישי",
-            "שישי",
-            "שבת"
-        ];
-
-        DATES_LIST.push({
-            date: `${day}/${month}`,
-            day: days[dateObject.getDay()],
-            month: month,
-            iso: iso
-        });
-    });
-
-
-    // ========================================
-    // יצירת SOLDIERS_DATA
-    // ========================================
+    const dates = dateHeaders
+        .map(convertDateHeader)
+        .filter(Boolean);
 
     const soldiers = [];
-
-    const teamCounters = {};
-
 
     for (let i = 1; i < lines.length; i++) {
 
@@ -189,79 +146,341 @@ function parseCSV(csvText) {
             continue;
         }
 
+        const lastName =
+            (values[0] || "").trim();
 
-        // ======================================
-        // עמודות בסיס
-        // ======================================
+        const firstName =
+            (values[1] || "").trim();
 
-        const lastName = (values[0] || "").trim();
-        const firstName = (values[1] || "").trim();
-        const team = (values[2] || "").trim();
+        const team =
+            (values[2] || "").trim();
 
-
-        // מתעלמים משורה ללא שם
         if (!firstName && !lastName) {
             continue;
         }
 
+        const schedule = {};
 
-        // ======================================
-        // יצירת ID אוטומטי
-        // ======================================
+        dateHeaders.forEach((header, index) => {
 
-        if (!teamCounters[team]) {
-            teamCounters[team] = 1;
-        } else {
-            teamCounters[team]++;
-        }
+            const date = convertDateHeader(header);
 
-        const id = `${team}_${teamCounters[team]}`;
+            if (!date) {
+                return;
+            }
 
-
-        // ======================================
-        // לוח היציאות
-        // ======================================
-
-        const schedule = values
-            .slice(3)
-            .map(value => (value || "").trim());
-
-
-        // ======================================
-        // הוספת החייל
-        // ======================================
+            schedule[date.date] =
+                (values[index + 3] || "").trim();
+        });
 
         soldiers.push({
-            id: id,
-            firstName: firstName,
-            lastName: lastName,
-            fullName: `${firstName} ${lastName}`.trim(),
-            team: team,
-            schedule: schedule
+            firstName,
+            lastName,
+            fullName:
+                `${firstName} ${lastName}`.trim(),
+            team,
+            schedule
         });
     }
 
+    return {
+        dates,
+        soldiers
+    };
+}
 
-    return soldiers;
+
+// ==========================================
+// המרת כותרת תאריך
+// תומך:
+// 09-ספט
+// 10-ספט
+// 06/10
+// 07/10
+// ==========================================
+
+function convertDateHeader(header) {
+
+    const value = String(header || "").trim();
+
+    if (!value) {
+        return null;
+    }
+
+    // --------------------------------------
+    // פורמט: 09/10
+    // --------------------------------------
+
+    if (/^\d{1,2}\/\d{1,2}$/.test(value)) {
+
+        const parts = value.split("/");
+
+        const day =
+            parts[0].padStart(2, "0");
+
+        const month =
+            parts[1].padStart(2, "0");
+
+        return createDateObject(day, month);
+    }
+
+
+    // --------------------------------------
+    // פורמט: 09-ספט
+    // --------------------------------------
+
+    const hebrewMonths = {
+        "ינו": "01",
+        "פבר": "02",
+        "מרץ": "03",
+        "אפר": "04",
+        "מאי": "05",
+        "יונ": "06",
+        "יול": "07",
+        "אוג": "08",
+        "ספט": "09",
+        "אוק": "10",
+        "נוב": "11",
+        "דצמ": "12"
+    };
+
+    const match =
+        value.match(/^(\d{1,2})-(.+)$/);
+
+    if (match) {
+
+        const day =
+            match[1].padStart(2, "0");
+
+        const hebrewMonth =
+            match[2].trim();
+
+        const month =
+            hebrewMonths[hebrewMonth];
+
+        if (month) {
+            return createDateObject(day, month);
+        }
+    }
+
+    return null;
+}
+
+
+// ==========================================
+// יצירת אובייקט תאריך
+// ==========================================
+
+function createDateObject(day, month) {
+
+    const year = 2026;
+
+    const iso =
+        `${year}-${month}-${day}`;
+
+    const dateObject =
+        new Date(`${iso}T00:00:00`);
+
+    const days = [
+        "ראשון",
+        "שני",
+        "שלישי",
+        "רביעי",
+        "חמישי",
+        "שישי",
+        "שבת"
+    ];
+
+    return {
+        date: `${day}/${month}`,
+        day: days[dateObject.getDay()],
+        month,
+        iso
+    };
+}
+
+
+// ==========================================
+// יצירת רשימת התאריכים המלאה
+// ==========================================
+
+function buildDatesList(datesA, datesB) {
+
+    const allDates = [
+        ...datesA,
+        ...datesB
+    ];
+
+    const uniqueDates = new Map();
+
+    allDates.forEach(date => {
+
+        if (!uniqueDates.has(date.date)) {
+            uniqueDates.set(
+                date.date,
+                date
+            );
+        }
+    });
+
+    DATES_LIST = Array.from(
+        uniqueDates.values()
+    ).sort(
+        (a, b) =>
+            new Date(a.iso) -
+            new Date(b.iso)
+    );
+
+    console.log(
+        "DATES_LIST:",
+        DATES_LIST
+    );
+}
+
+
+// ==========================================
+// חיבור שני קבצי החיילים
+// ==========================================
+
+function mergeSoldiers(soldiersA, soldiersB) {
+
+    const soldiersMap = new Map();
+
+
+    // --------------------------------------
+    // קודם מכניסים את קובץ א
+    // --------------------------------------
+
+    soldiersA.forEach(soldier => {
+
+        const key =
+            createSoldierKey(
+                soldier.firstName,
+                soldier.lastName
+            );
+
+        soldiersMap.set(key, {
+            firstName: soldier.firstName,
+            lastName: soldier.lastName,
+            fullName: soldier.fullName,
+            team: soldier.team,
+            schedule: {
+                ...soldier.schedule
+            }
+        });
+    });
+
+
+    // --------------------------------------
+    // לאחר מכן מוסיפים את קובץ ב
+    // --------------------------------------
+
+    soldiersB.forEach(soldier => {
+
+        const key =
+            createSoldierKey(
+                soldier.firstName,
+                soldier.lastName
+            );
+
+        if (soldiersMap.has(key)) {
+
+            const existing =
+                soldiersMap.get(key);
+
+            // אם קיים בשני הקבצים,
+            // קובץ ב מוסיף את התאריכים שלו
+
+            existing.schedule = {
+                ...existing.schedule,
+                ...soldier.schedule
+            };
+
+            // אם לקובץ ב יש צוות
+            // נשתמש בו רק אם אין בקובץ א
+            if (!existing.team && soldier.team) {
+                existing.team = soldier.team;
+            }
+
+        } else {
+
+            // חייל שקיים רק בקובץ ב
+
+            soldiersMap.set(key, {
+                firstName: soldier.firstName,
+                lastName: soldier.lastName,
+                fullName: soldier.fullName,
+                team: soldier.team,
+                schedule: {
+                    ...soldier.schedule
+                }
+            });
+        }
+    });
+
+
+    // --------------------------------------
+    // המרה למבנה שה-app.js מצפה לו
+    // --------------------------------------
+
+    const soldiers =
+        Array.from(soldiersMap.values());
+
+    return soldiers.map(
+        (soldier, index) => {
+
+            const schedule =
+                DATES_LIST.map(
+                    date =>
+                        soldier.schedule[date.date] || ""
+                );
+
+            return {
+                id: `soldier_${index + 1}`,
+                firstName: soldier.firstName,
+                lastName: soldier.lastName,
+                fullName: soldier.fullName,
+                team: soldier.team,
+                schedule
+            };
+        }
+    );
+}
+
+
+// ==========================================
+// יצירת מפתח ייחודי לחייל
+// ==========================================
+
+function createSoldierKey(firstName, lastName) {
+
+    return (
+        `${firstName}|${lastName}`
+    )
+        .trim()
+        .toLowerCase();
 }
 
 
 // ==========================================
 // פענוח שורת CSV
-// תומך גם בפסיקים בתוך גרשיים
+// תומך בפסיקים בתוך גרשיים
 // ==========================================
 
 function parseCSVLine(line) {
 
     const result = [];
+
     let current = "";
     let insideQuotes = false;
 
-
-    for (let i = 0; i < line.length; i++) {
+    for (
+        let i = 0;
+        i < line.length;
+        i++
+    ) {
 
         const char = line[i];
-
 
         if (char === '"') {
 
@@ -272,7 +491,8 @@ function parseCSVLine(line) {
                 current += '"';
                 i++;
             } else {
-                insideQuotes = !insideQuotes;
+                insideQuotes =
+                    !insideQuotes;
             }
 
         } else if (
@@ -289,11 +509,11 @@ function parseCSVLine(line) {
         }
     }
 
-
     result.push(current);
 
     return result;
 }
+
 
 // ==========================================
 // התחלת האפליקציה
