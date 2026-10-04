@@ -1,23 +1,21 @@
 // ==========================================
-// נתוני האפליקציה - טעינה מקבצי CSV
+// נתוני האפליקציה
 // ==========================================
 
 let DATES_LIST = [];
 let SOLDIERS_DATA = [];
 
-// שני קבצי הנתונים
-const CSV_FILE_A = "./data/יציאות א מעודכן(3).csv";
+const CSV_FILE_A = "./data/יציאות א מעודכן.csv";
 const CSV_FILE_B = "./data/יציאות סבב ב לפרסום.csv";
 
 
 // ==========================================
-// טעינת שני קבצי ה-CSV
+// טעינת הקבצים
 // ==========================================
 
 async function loadSoldiersData() {
     try {
-        console.log("טוען קובץ א...");
-        console.log("טוען קובץ ב...");
+        console.log("מתחיל טעינת קבצי CSV...");
 
         const [responseA, responseB] = await Promise.all([
             fetch(CSV_FILE_A),
@@ -26,58 +24,45 @@ async function loadSoldiersData() {
 
         if (!responseA.ok) {
             throw new Error(
-                `לא ניתן לטעון את קובץ א: ${responseA.status}`
+                `קובץ א לא נטען: ${responseA.status} ${responseA.statusText}`
             );
         }
 
         if (!responseB.ok) {
             throw new Error(
-                `לא ניתן לטעון את קובץ ב: ${responseB.status}`
+                `קובץ ב לא נטען: ${responseB.status} ${responseB.statusText}`
             );
         }
 
         const csvTextA = await responseA.text();
         const csvTextB = await responseB.text();
 
-        console.log("קובץ א נטען בהצלחה");
-        console.log("קובץ ב נטען בהצלחה");
+        console.log("קובץ א נטען");
+        console.log("קובץ ב נטען");
 
-        // פענוח שני הקבצים
         const parsedA = parseCSVFile(csvTextA);
         const parsedB = parseCSVFile(csvTextB);
 
-        console.log(`קובץ א: ${parsedA.soldiers.length} חיילים`);
-        console.log(`קובץ ב: ${parsedB.soldiers.length} חיילים`);
+        console.log("חיילים בקובץ א:", parsedA.soldiers.length);
+        console.log("חיילים בקובץ ב:", parsedB.soldiers.length);
 
-        // יצירת רשימת התאריכים המלאה
         buildDatesList(
             parsedA.dates,
             parsedB.dates
         );
 
-        // חיבור שני הקבצים
         SOLDIERS_DATA = mergeSoldiers(
             parsedA.soldiers,
             parsedB.soldiers
         );
 
-        console.log(
-            `סה"כ נטענו ${SOLDIERS_DATA.length} חיילים`
-        );
+        console.log("סה״כ חיילים:", SOLDIERS_DATA.length);
+        console.log("סה״כ תאריכים:", DATES_LIST.length);
 
-        console.log(
-            `סה"כ ${DATES_LIST.length} תאריכים`
-        );
-
-        // לאחר שהנתונים נטענו - מתחילים את האפליקציה
         initializeApp();
 
     } catch (error) {
-
-        console.error(
-            "שגיאה בטעינת נתוני CSV:",
-            error
-        );
+        console.error("שגיאה בטעינת הנתונים:", error);
 
         const container =
             document.getElementById("soldiers-grid");
@@ -86,13 +71,9 @@ async function loadSoldiersData() {
             container.innerHTML = `
                 <div class="col-span-2 text-center p-6 text-red-400">
                     <i class="fas fa-exclamation-triangle mb-2"></i>
-
-                    <div>
-                        לא ניתן לטעון את נתוני החיילים
-                    </div>
-
+                    <div>לא ניתן לטעון את נתוני החיילים</div>
                     <div class="text-sm mt-2 text-slate-400">
-                        בדוק שקבצי ה-CSV נמצאים בתיקיית data
+                        ${error.message}
                     </div>
                 </div>
             `;
@@ -102,7 +83,7 @@ async function loadSoldiersData() {
 
 
 // ==========================================
-// פענוח קובץ CSV
+// CSV
 // ==========================================
 
 function parseCSVFile(csvText) {
@@ -123,12 +104,7 @@ function parseCSVFile(csvText) {
     }
 
     const headers = parseCSVLine(lines[0])
-        .map(header => header.trim());
-
-    // שלוש העמודות הראשונות:
-    // שם משפחה
-    // שם פרטי
-    // מחלקה / צוות
+        .map(x => x.trim());
 
     const dateHeaders = headers.slice(3);
 
@@ -163,7 +139,8 @@ function parseCSVFile(csvText) {
 
         dateHeaders.forEach((header, index) => {
 
-            const date = convertDateHeader(header);
+            const date =
+                convertDateHeader(header);
 
             if (!date) {
                 return;
@@ -191,44 +168,31 @@ function parseCSVFile(csvText) {
 
 
 // ==========================================
-// המרת כותרת תאריך
-// תומך:
-// 09-ספט
-// 10-ספט
-// 06/10
-// 07/10
+// המרת תאריך
 // ==========================================
 
 function convertDateHeader(header) {
 
-    const value = String(header || "").trim();
+    const value =
+        String(header || "").trim();
 
     if (!value) {
         return null;
     }
 
-    // --------------------------------------
-    // פורמט: 09/10
-    // --------------------------------------
-
+    // 06/10
     if (/^\d{1,2}\/\d{1,2}$/.test(value)) {
 
-        const parts = value.split("/");
+        const parts =
+            value.split("/");
 
-        const day =
-            parts[0].padStart(2, "0");
-
-        const month =
-            parts[1].padStart(2, "0");
-
-        return createDateObject(day, month);
+        return createDateObject(
+            parts[0].padStart(2, "0"),
+            parts[1].padStart(2, "0")
+        );
     }
 
-
-    // --------------------------------------
-    // פורמט: 09-ספט
-    // --------------------------------------
-
+    // 09-ספט
     const hebrewMonths = {
         "ינו": "01",
         "פבר": "02",
@@ -247,39 +211,34 @@ function convertDateHeader(header) {
     const match =
         value.match(/^(\d{1,2})-(.+)$/);
 
-    if (match) {
-
-        const day =
-            match[1].padStart(2, "0");
-
-        const hebrewMonth =
-            match[2].trim();
-
-        const month =
-            hebrewMonths[hebrewMonth];
-
-        if (month) {
-            return createDateObject(day, month);
-        }
+    if (!match) {
+        return null;
     }
 
-    return null;
+    const month =
+        hebrewMonths[match[2].trim()];
+
+    if (!month) {
+        return null;
+    }
+
+    return createDateObject(
+        match[1].padStart(2, "0"),
+        month
+    );
 }
 
 
 // ==========================================
-// יצירת אובייקט תאריך
+// יצירת תאריך
 // ==========================================
 
 function createDateObject(day, month) {
 
     const year = 2026;
 
-    const iso =
-        `${year}-${month}-${day}`;
-
-    const dateObject =
-        new Date(`${iso}T00:00:00`);
+    const date =
+        new Date(`${year}-${month}-${day}T00:00:00`);
 
     const days = [
         "ראשון",
@@ -293,43 +252,34 @@ function createDateObject(day, month) {
 
     return {
         date: `${day}/${month}`,
-        day: days[dateObject.getDay()],
+        day: days[date.getDay()],
         month,
-        iso
+        iso: `${year}-${month}-${day}`
     };
 }
 
 
 // ==========================================
-// יצירת רשימת התאריכים המלאה
+// רשימת תאריכים
 // ==========================================
 
 function buildDatesList(datesA, datesB) {
 
-    const allDates = [
-        ...datesA,
-        ...datesB
-    ];
+    const map = new Map();
 
-    const uniqueDates = new Map();
-
-    allDates.forEach(date => {
-
-        if (!uniqueDates.has(date.date)) {
-            uniqueDates.set(
-                date.date,
-                date
-            );
+    [...datesA, ...datesB].forEach(date => {
+        if (!map.has(date.date)) {
+            map.set(date.date, date);
         }
     });
 
-    DATES_LIST = Array.from(
-        uniqueDates.values()
-    ).sort(
-        (a, b) =>
-            new Date(a.iso) -
-            new Date(b.iso)
-    );
+    DATES_LIST =
+        Array.from(map.values())
+            .sort(
+                (a, b) =>
+                    new Date(a.iso) -
+                    new Date(b.iso)
+            );
 
     console.log(
         "DATES_LIST:",
@@ -339,17 +289,12 @@ function buildDatesList(datesA, datesB) {
 
 
 // ==========================================
-// חיבור שני קבצי החיילים
+// איחוד החיילים
 // ==========================================
 
 function mergeSoldiers(soldiersA, soldiersB) {
 
-    const soldiersMap = new Map();
-
-
-    // --------------------------------------
-    // קודם מכניסים את קובץ א
-    // --------------------------------------
+    const map = new Map();
 
     soldiersA.forEach(soldier => {
 
@@ -359,7 +304,7 @@ function mergeSoldiers(soldiersA, soldiersB) {
                 soldier.lastName
             );
 
-        soldiersMap.set(key, {
+        map.set(key, {
             firstName: soldier.firstName,
             lastName: soldier.lastName,
             fullName: soldier.fullName,
@@ -370,11 +315,6 @@ function mergeSoldiers(soldiersA, soldiersB) {
         });
     });
 
-
-    // --------------------------------------
-    // לאחר מכן מוסיפים את קובץ ב
-    // --------------------------------------
-
     soldiersB.forEach(soldier => {
 
         const key =
@@ -383,30 +323,23 @@ function mergeSoldiers(soldiersA, soldiersB) {
                 soldier.lastName
             );
 
-        if (soldiersMap.has(key)) {
+        if (map.has(key)) {
 
             const existing =
-                soldiersMap.get(key);
-
-            // אם קיים בשני הקבצים,
-            // קובץ ב מוסיף את התאריכים שלו
+                map.get(key);
 
             existing.schedule = {
                 ...existing.schedule,
                 ...soldier.schedule
             };
 
-            // אם לקובץ ב יש צוות
-            // נשתמש בו רק אם אין בקובץ א
             if (!existing.team && soldier.team) {
                 existing.team = soldier.team;
             }
 
         } else {
 
-            // חייל שקיים רק בקובץ ב
-
-            soldiersMap.set(key, {
+            map.set(key, {
                 firstName: soldier.firstName,
                 lastName: soldier.lastName,
                 fullName: soldier.fullName,
@@ -418,16 +351,8 @@ function mergeSoldiers(soldiersA, soldiersB) {
         }
     });
 
-
-    // --------------------------------------
-    // המרה למבנה שה-app.js מצפה לו
-    // --------------------------------------
-
-    const soldiers =
-        Array.from(soldiersMap.values());
-
-    return soldiers.map(
-        (soldier, index) => {
+    return Array.from(map.values())
+        .map((soldier, index) => {
 
             const schedule =
                 DATES_LIST.map(
@@ -443,20 +368,17 @@ function mergeSoldiers(soldiersA, soldiersB) {
                 team: soldier.team,
                 schedule
             };
-        }
-    );
+        });
 }
 
 
 // ==========================================
-// יצירת מפתח ייחודי לחייל
+// מפתח חייל
 // ==========================================
 
 function createSoldierKey(firstName, lastName) {
 
-    return (
-        `${firstName}|${lastName}`
-    )
+    return `${firstName}|${lastName}`
         .trim()
         .toLowerCase();
 }
@@ -464,7 +386,6 @@ function createSoldierKey(firstName, lastName) {
 
 // ==========================================
 // פענוח שורת CSV
-// תומך בפסיקים בתוך גרשיים
 // ==========================================
 
 function parseCSVLine(line) {
@@ -474,11 +395,7 @@ function parseCSVLine(line) {
     let current = "";
     let insideQuotes = false;
 
-    for (
-        let i = 0;
-        i < line.length;
-        i++
-    ) {
+    for (let i = 0; i < line.length; i++) {
 
         const char = line[i];
 
@@ -491,8 +408,7 @@ function parseCSVLine(line) {
                 current += '"';
                 i++;
             } else {
-                insideQuotes =
-                    !insideQuotes;
+                insideQuotes = !insideQuotes;
             }
 
         } else if (
@@ -516,7 +432,7 @@ function parseCSVLine(line) {
 
 
 // ==========================================
-// התחלת האפליקציה
+// הפעלה
 // ==========================================
 
 loadSoldiersData();
