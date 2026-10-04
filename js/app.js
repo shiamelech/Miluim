@@ -52,7 +52,7 @@ function getTodayIndex() {
     return idx !== -1 ? idx : 0; 
 }
 
-const TODAY_INDEX = getTodayIndex();
+let TODAY_INDEX = 0;
 
 // ==========================================
 // אתחול האפליקציה וניהול היסטוריה (Back Button)
