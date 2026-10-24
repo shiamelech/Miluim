@@ -300,11 +300,9 @@ async function renderDashboard() {
 
     calculateUpcomingExit();
 
-    if (currentViewMode === 'month') {
+    
         renderMonthCalendar();
-    } else {
-        renderTimeline();
-    }
+    
 }
 
 function calculateUpcomingExit() {
