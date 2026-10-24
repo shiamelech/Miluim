@@ -4,7 +4,7 @@ const STORAGE_KEY = "military_schedule_selected_soldier_id";
 let currentSoldier = null;
 let selectedTeamFilter = "ALL";
 let selectedStatusFilter = "ALL";
-let currentViewMode = "list";
+let currentViewMode = "month";
 
 // אוגר נתונים עבור התאריכים העבריים והחגים
 let hebrewDataCache = {};
