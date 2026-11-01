@@ -7,6 +7,7 @@ let SOLDIERS_DATA = [];
 
 const CSV_FILE_A = "./data/יציאות א מעודכן.csv";
 const CSV_FILE_B = "./data/יציאות סבב ב לפרסום.csv";
+const CSV_FILE_C = "./data/סבב יציאות שלישי קו חורון.csv";
 
 
 // ==========================================
