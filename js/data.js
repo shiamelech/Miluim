@@ -18,7 +18,7 @@ async function loadSoldiersData() {
     try {
         console.log("מתחיל טעינת קבצי CSV...");
 
-        const [responseA, responseB, responseC] = await Promise.all([
+        const [responseA, responseB] = await Promise.all([
             fetch(CSV_FILE_A),
             fetch(CSV_FILE_B),
             fetch(CSV_FILE_C)
@@ -36,42 +36,26 @@ async function loadSoldiersData() {
             );
         }
 
-        if (!responseC.ok) {
-            throw new Error(
-                `קובץ ג לא נטען: ${responseC.status} ${responseC.statusText}`
-            );
-        }
-
         const csvTextA = await responseA.text();
         const csvTextB = await responseB.text();
-        const csvTextC = await responseC.text();
 
         console.log("קובץ א נטען");
         console.log("קובץ ב נטען");
-        console.log("קובץ ג נטען");
 
         const parsedA = parseCSVFile(csvTextA);
         const parsedB = parseCSVFile(csvTextB);
-        const parsedC = parseCSVFile(csvTextC);
 
         console.log("חיילים בקובץ א:", parsedA.soldiers.length);
         console.log("חיילים בקובץ ב:", parsedB.soldiers.length);
-        console.log("חיילים בקובץ ג:", parsedC.soldiers.length);
 
         buildDatesList(
             parsedA.dates,
-            parsedB.dates,
-            parsedC.dates
-        );
-
-        const mergedAB = mergeSoldiers(
-            parsedA.soldiers,
-            parsedB.soldiers
+            parsedB.dates
         );
 
         SOLDIERS_DATA = mergeSoldiers(
-            mergedAB,
-            parsedC.soldiers
+            parsedA.soldiers,
+            parsedB.soldiers
         );
 
         console.log("סה״כ חיילים:", SOLDIERS_DATA.length);
@@ -281,11 +265,11 @@ function createDateObject(day, month) {
 // רשימת תאריכים
 // ==========================================
 
-function buildDatesList(...dateLists) {
+function buildDatesList(datesA, datesB) {
 
     const map = new Map();
 
-    dateLists.flat().forEach(date => {
+    [...datesA, ...datesB].forEach(date => {
         if (!map.has(date.date)) {
             map.set(date.date, date);
         }
@@ -336,3 +320,121 @@ function mergeSoldiers(soldiersA, soldiersB) {
     soldiersB.forEach(soldier => {
 
         const key =
+            createSoldierKey(
+                soldier.firstName,
+                soldier.lastName
+            );
+
+        if (map.has(key)) {
+
+            const existing =
+                map.get(key);
+
+            existing.schedule = {
+                ...existing.schedule,
+                ...soldier.schedule
+            };
+
+            if (!existing.team && soldier.team) {
+                existing.team = soldier.team;
+            }
+
+        } else {
+
+            map.set(key, {
+                firstName: soldier.firstName,
+                lastName: soldier.lastName,
+                fullName: soldier.fullName,
+                team: soldier.team,
+                schedule: {
+                    ...soldier.schedule
+                }
+            });
+        }
+    });
+
+    return Array.from(map.values())
+        .map((soldier, index) => {
+
+            const schedule =
+                DATES_LIST.map(
+                    date =>
+                        soldier.schedule[date.date] || ""
+                );
+
+            return {
+                id: `soldier_${index + 1}`,
+                firstName: soldier.firstName,
+                lastName: soldier.lastName,
+                fullName: soldier.fullName,
+                team: soldier.team,
+                schedule
+            };
+        });
+}
+
+
+// ==========================================
+// מפתח חייל
+// ==========================================
+
+function createSoldierKey(firstName, lastName) {
+
+    return `${firstName}|${lastName}`
+        .trim()
+        .toLowerCase();
+}
+
+
+// ==========================================
+// פענוח שורת CSV
+// ==========================================
+
+function parseCSVLine(line) {
+
+    const result = [];
+
+    let current = "";
+    let insideQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+
+        const char = line[i];
+
+        if (char === '"') {
+
+            if (
+                insideQuotes &&
+                line[i + 1] === '"'
+            ) {
+                current += '"';
+                i++;
+            } else {
+                insideQuotes = !insideQuotes;
+            }
+
+        } else if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            result.push(current);
+            current = "";
+
+        } else {
+
+            current += char;
+        }
+    }
+
+    result.push(current);
+
+    return result;
+}
+
+
+// ==========================================
+// הפעלה
+// ==========================================
+
+loadSoldiersData();
