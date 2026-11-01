@@ -20,7 +20,8 @@ async function loadSoldiersData() {
 
         const [responseA, responseB] = await Promise.all([
             fetch(CSV_FILE_A),
-            fetch(CSV_FILE_B)
+            fetch(CSV_FILE_B),
+            fetch(CSV_FILE_C)
         ]);
 
         if (!responseA.ok) {
